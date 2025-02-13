@@ -24,7 +24,7 @@ jobs:
           cache: 'yarn' # Change to 'npm' if using npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile # Change to 'npm ci' if using npm
+        run: npm install
 
       - name: Run ESLint
         run: yarn lint # Ensure you have a 'lint' script in package.json
