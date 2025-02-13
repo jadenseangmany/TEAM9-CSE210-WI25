@@ -1,0 +1,67 @@
+name: React Native CI
+
+on:
+  push:
+    branches:
+      - '**'  # trigger on push to any branch
+  pull_request:
+    branches:
+      - main # only trigger when PR trying to merge into main
+
+jobs:
+  build:
+    name: Build and Test React Native
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn' # Change to 'npm' if using npm
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile # Change to 'npm ci' if using npm
+
+      - name: Run ESLint
+        run: yarn lint # Ensure you have a 'lint' script in package.json
+
+      - name: Run Jest tests
+        run: yarn test --ci --coverage # Ensures tests run in CI mode
+
+      - name: Cache Gradle files (for Android)
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/*.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build Android app
+        run: |
+          cd android
+          ./gradlew assembleDebug
+        if: success()
+
+      - name: Cache Pods (for iOS)
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install CocoaPods (for iOS)
+        run: |
+          cd ios
+          pod install --silent
+        if: runner.os == 'macOS'
+
+      - name: Build iOS app
+        run: |
+          cd ios
+          xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphonesimulator -configuration Debug build
+        if: runner.os == 'macOS'
