@@ -21,16 +21,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn' # Change to 'npm' if using npm
+          cache: 'npm' # Use npm cache
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # Installs dependencies using package-lock.json
 
       - name: Run ESLint
-        run: yarn lint # Ensure you have a 'lint' script in package.json
+        run: npm run lint # Ensure you have a 'lint' script in package.json
 
       - name: Run Jest tests
-        run: yarn test --ci --coverage # Ensures tests run in CI mode
+        run: npm test -- --ci --coverage # Ensures tests run in CI mode
 
       - name: Cache Gradle files (for Android)
         uses: actions/cache@v4
