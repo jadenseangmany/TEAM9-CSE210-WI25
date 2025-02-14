@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CalenderModule from './Components/Calenders/CalenderModule';
+import EventModule from './Components/Events/EventModule';
 
 const StudyGroupScreen = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -19,7 +20,7 @@ const ScheduleScreen = () => (
 
 const EventsScreen = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Events Screen</Text>
+    <EventModule />
   </View>
 );
 
