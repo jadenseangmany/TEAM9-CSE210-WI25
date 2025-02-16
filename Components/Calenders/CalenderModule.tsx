@@ -1,26 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, Button, Modal } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, Agenda } from 'react-native-calendars';
+import { CalendarModuleProps } from '../Types/Interfaces';
 
-const CalenderModule: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
-  type dateType = {
-    dateString: string;
-    day: number;
-    month: number;
-    timestamp: number;
-    year: number;
-  };
 
-  const [schedules, setSchedules] = useState<{
-    [key: string]: {
-      selected: boolean;
-      events?: { endTimeStamp: number; startTimeStamp: number; eventName: string }[];
-    };
-  }>({});
-  
-  // const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<{ [key: string]: { selected: boolean, date: string} }>({});
-
+const CalendarModule: React.FC<CalendarModuleProps> = ({
+  schedules,
+  selectedDate,
+  onDateSelect,
+  onEventSave,
+}) => {
   const [eventName, setEventName] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
@@ -29,39 +18,20 @@ const CalenderModule: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
   const currentDate = new Date();
 
   // onSelecting a day callback
-  const handleDayPress = (date: dateType) => {
-    setSelectedDate({
-      [date.dateString]: { selected: true , date: date.dateString},
-    });
+  const handleDayPress = (date: { dateString: string }) => {
+    onDateSelect(date.dateString);
   };
 
   // on Saving an event callback
   const handleSaveEvent = () => {
-    if (selectedDate && eventName && startTime && endTime) {
+    if (eventName && startTime && endTime) {
+      const selectedDateKey = Object.keys(selectedDate)[0];
+      const startTimestamp = new Date(`${selectedDateKey}T${startTime}:00`).getTime();
+      const endTimestamp = new Date(`${selectedDateKey}T${endTime}:00`).getTime();
 
-      // Convert start and end time to timestamps
-      const startTimestamp = new Date(`${Object.keys(selectedDate)[0]}T${startTime}:00`).getTime();
-      const endTimestamp = new Date(`${Object.keys(selectedDate)[0]}T${endTime}:00`).getTime();
-      console.log(startTimestamp, endTimestamp);
-      // Update state correctly using the previous state
-      setSchedules((prevDates) => {
-        const existingEvents = prevDates[Object.keys(selectedDate)[0]]?.events || []; // Get existing events or an empty array
+      // Call the onEventSave callback passed from the parent component
+      onEventSave(selectedDateKey, eventName, startTimestamp, endTimestamp);
 
-        return {
-          ...prevDates,
-          [Object.keys(selectedDate)[0]]: {
-            selected: true,
-            events: [
-              ...existingEvents, // Preserve previous events
-              {
-                startTimeStamp: startTimestamp,
-                endTimeStamp: endTimestamp,
-                eventName,
-              },
-            ],
-          },
-        };
-      });
       setIsModalVisible(false); // Hide the modal after saving
       setEventName('');
       setStartTime('');
@@ -102,33 +72,33 @@ const CalenderModule: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
         }}
       />
 
-    {/* Display events of selected date*/}
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Events</Text>
-      {Object.keys(schedules).map((date) => {
-        if (date != Object.keys(selectedDate)[0]) return null;
-        const { selected, events } = schedules[date];
+      {/* Display events of selected date*/}
+      <View style={{ padding: 20 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Events</Text>
+        {Object.keys(schedules).map((date) => {
+          if (date !== Object.keys(selectedDate)[0]) return null;
+          const { selected, events } = schedules[date];
 
-        if (events?.length) {
-          return (
-            <View key={date} style={{ marginVertical: 5 }}>
-              <Text style={{ fontWeight: 'bold' }}>{date}</Text>
-              {events.map((event, index) => (
-                <Text key={index}>
-                  {event.eventName}: {new Date(event.startTimeStamp).getHours()}:00 - {new Date(event.endTimeStamp).getHours()}:00
-                </Text>
-              ))}
-            </View>
-          );
-        }
-        return null;
-      })}
-    </View>
+          if (events?.length) {
+            return (
+              <View key={date} style={{ marginVertical: 5 }}>
+                <Text style={{ fontWeight: 'bold' }}>{date}</Text>
+                {events.map((event, index) => (
+                  <Text key={index}>
+                    {event.eventName}: {new Date(event.startTimeStamp).getHours()}:00 - {new Date(event.endTimeStamp).getHours()}:00
+                  </Text>
+                ))}
+              </View>
+            );
+          }
+          return null;
+        })}
+      </View>
 
-    {/* Add Event Button */}
-    <View style={{ padding: 20 }}>
-      <Button title="Add Event" onPress={() => setIsModalVisible(true)} />
-    </View>
+      {/* Add Event Button */}
+      <View style={{ padding: 20 }}>
+        <Button title="Add Event" onPress={() => setIsModalVisible(true)} />
+      </View>
 
       {/* Add Event Modal */}
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
@@ -195,4 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CalenderModule;
+export default CalendarModule;
