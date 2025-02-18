@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Modal, TextInput, Button } from 'react-native';
+import { Alert, StyleSheet, Text, View, TouchableOpacity, SafeAreaView, RefreshControl} from 'react-native';
 import { Agenda, DateData, AgendaEntry, AgendaSchedule } from 'react-native-calendars';
 import FirestoreService from '../Firestore/FirestoreService';
 import { EventData } from '../Types/Interfaces';
-import { Timestamp } from 'firebase/firestore';
 import TimeSelectorModal from './TimeSelectorModal';
-import { set } from 'date-fns';
+
 
 interface Props {
   eventDocs: string;  // 'GlobalEvents' or 'PersonalEvents'
@@ -21,9 +20,11 @@ interface State {
   eventStartTime: string;
   eventEndTime: string;
   eventToEdit: EventData | null;
+  isRefreshing: boolean;
 }
 
-export default class CalenderAgenda extends Component<Props, State> {
+
+export default class CalenderAgenda extends React.PureComponent<Props, State> {
   state: State = {
     items: {},
     selectedDate: '',
@@ -33,6 +34,7 @@ export default class CalenderAgenda extends Component<Props, State> {
     eventStartTime: '',
     eventEndTime: '',
     eventToEdit: null,
+    isRefreshing: false,
   };
 
   componentDidMount() {
@@ -41,10 +43,6 @@ export default class CalenderAgenda extends Component<Props, State> {
         selectedDate: new Date().toLocaleDateString('en-CA'),
         items: {[new Date().toLocaleDateString('en-CA')]: []}
     });
-    // const interval = setInterval(() => {
-    //     this.fetchEvents();
-    //   }, 10000); // 10 seconds interval
-    // return () => clearInterval(interval); // Cleanup function to prevent memory leaks
   }
 
   fetchEvents = async () => {
@@ -54,39 +52,39 @@ export default class CalenderAgenda extends Component<Props, State> {
         this.props.eventDocs,
         this.props.eventCollection
       );
-      if (eventsList.length === 0) {
-        this.setState({ items: {} });
-        return;
-      }
       
-      const formattedEvents: AgendaSchedule = {};
+      console.log("eventList length", eventsList);
       for (const eventDate of eventsList) {
         const dailyEvents = await FirestoreService.getEventsFromCollection(
           'Events', this.props.eventDocs, this.props.eventCollection, eventDate.id, 'DailyAgenda'
         );
         
         dailyEvents.forEach(event => {
-          const startDate = event.StartTime instanceof Timestamp ? event.StartTime.toDate() : new Date(event.StartTime);
-          const dateKey = startDate.toLocaleDateString('en-CA');
-          
-          if (!formattedEvents[dateKey]) formattedEvents[dateKey] = [];
-          formattedEvents[dateKey].push({
-            ...event,
-            day: startDate.toLocaleTimeString(),
-            name: event.EventName,
-            height: 50, 
-          });
+          this.setState(prevState => ({
+            items: {
+              ...prevState.items,
+              [eventDate.id]: eventsList.length === 0 ? [] : eventsList.map(event => ({
+                ...event,
+                name: event.EventName,
+                height: 50, 
+                day: event.StartTime && event.StartTime.toDate
+                  ? new Date(event.StartTime.toDate()).toLocaleTimeString()
+                  : 'Invalid Time',
+              })),
+            },
+          }));
         });
       }
       
-      this.setState({ items: formattedEvents });
+      // this.setState({ items: formattedEvents });
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
 
   handleDateSelect = async (date: string) => {
-    this.setState({ selectedDate: date });
+    console.log('Selected date!!!!!!!!!:', date);
+    this.setState({ selectedDate: date.normalize('NFC') });
     try {
       const eventsList = await FirestoreService.getEventsFromCollection(
         'Events',
@@ -113,17 +111,6 @@ export default class CalenderAgenda extends Component<Props, State> {
     }
   };
 
-  renderItem = (item: EventData) => (
-    console.log("renderItem", item),
-    <View style={styles.itemContainer}>
-      <Text>{item.EventName}</Text>
-      <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
-      <Text>End: {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
-      <TouchableOpacity onPress={() => this.openEditModal(item)}>
-        <Text>Edit</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   openEditModal = (event: EventData) => {
     if (!this.state.selectedDate) {
@@ -161,10 +148,20 @@ handleSaveEvent = async (
         id: eventToEdit ? eventToEdit.id : '', // Provide a default id or generate a new one
         EventName: eventName,
         EventDescription: eventDescription,
-        StartTime: FirestoreService.createTimestampFromTimeString(eventStartTime),
-        EndTime: FirestoreService.createTimestampFromTimeString(eventEndTime),
+        StartTime: FirestoreService.createTimestampFromTimeString(eventStartTime, selectedDate),
+        EndTime: FirestoreService.createTimestampFromTimeString(eventEndTime, selectedDate),
     };
 
+    const timestamp = FirestoreService.createTimestampFromTimeString(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), selectedDate);
+    // Update lastUpdated field
+    await FirestoreService.updateDocField(
+      "lastUpdated", 
+      timestamp,
+        'Events', 
+        this.props.eventDocs, 
+        this.props.eventCollection, 
+        selectedDate, 
+    );
     if (eventToEdit) {
         // Update existing event
         await FirestoreService.updateEventInCollection(
@@ -175,9 +172,9 @@ handleSaveEvent = async (
             this.props.eventCollection, 
             selectedDate, 
             'DailyAgenda'
+            
         );
-    } else {
-        console.log('new event:', newEvent);
+    } else {        
         // Add new event
         await FirestoreService.addEventToCollection(
             newEvent, 
@@ -189,8 +186,8 @@ handleSaveEvent = async (
         );
     }
 
-    this.setState({ isModalVisible: false, eventToEdit: null });
-    this.fetchEvents();
+    this.setState({ isModalVisible: false, eventToEdit: null, eventName: '', eventDescription: '', eventStartTime: '', eventEndTime: '' });
+    this.handleDateSelect(selectedDate);
 };
 
   renderEmptyDate = () => {
@@ -214,9 +211,31 @@ handleSaveEvent = async (
   }
 
   loadItems = (day: DateData) => {
+    console.log('loadItems called', day);
     setTimeout(() => {
-        this.fetchEvents();
-    }, 3000);
+        this.handleDateSelect(this.state.selectedDate);
+    }, 1000);
+  };
+  
+  renderItem = (item: EventData) => {
+    return (
+      <View style={styles.itemContainer}>
+        <Text>{item.EventName}</Text>
+        <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
+        <Text>End: {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
+        <TouchableOpacity onPress={() => this.openEditModal(item)}>
+          <Text>Edit</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  
+  handleRefresh = () => {
+    this.setState({ isRefreshing: true });
+    // this.fetchEvents();
+    setTimeout(() => {
+      this.setState({ isRefreshing: false });
+    }, 2000);
   };
 
   render() {
@@ -234,17 +253,25 @@ handleSaveEvent = async (
       <SafeAreaView style={styles.safe}>
         <Agenda
           testID="agenda"
-          items={items || {[new Date().toLocaleDateString('en-CA')]: [{ name: 'No Plan Today', height: 50, day: '12:00' } as AgendaEntry]}}
+          items={items}
           selected={selectedDate}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.handleRefresh}
+            />
+          }
+          refreshing={this.state.isRefreshing}
           renderItem={this.renderItem}
           loadItemsForMonth={this.loadItems}
+          onCalendarToggled={this.loadItems}
           renderEmptyDate={this.renderEmptyDate}
           rowHasChanged={this.rowHasChanged}
           showClosingKnob={true}
           onDayPress={(day: DateData) => this.handleDateSelect(day.dateString)}
           markedDates={markedDates}
           showOnlySelectedDayItems={true}
-          renderKnob={() => <View style={{ height: 20, width: 100, backgroundColor: 'skyblue' }} />}
+          renderKnob={() => <View style={{ height: 10, width: 100, backgroundColor: 'skyblue' }} />}
           theme={{
             selectedDayBackgroundColor: 'blue',
             selectedDayTextColor: 'white',
@@ -260,7 +287,13 @@ handleSaveEvent = async (
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
         
-        <TimeSelectorModal isModalVisible={isModalVisible} closeModal={this.closeModal} handleSaveEvent={this.handleSaveEvent} event={this.state.eventToEdit}/>
+        <TimeSelectorModal 
+            isModalVisible={isModalVisible} 
+            closeModal={this.closeModal} 
+            handleSaveEvent={this.handleSaveEvent} 
+            event={this.state.eventToEdit} 
+            date={this.state.selectedDate}
+        />
         
       </SafeAreaView>
     );

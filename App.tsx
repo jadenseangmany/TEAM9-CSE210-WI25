@@ -7,8 +7,9 @@ import GlobalEvents from './Components/GlobalEvents/GlobalEvents';
 import CalenderAgenda from './Components/Calenders/CalenderAgenda';
 import { AgendaSchedule } from 'react-native-calendars';
 import FirestoreService from './Components/Firestore/FirestoreService';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createNativeStackNavigator, NativeStackNavigationProp} from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+
 
 interface AppContextProps {
   isLoggedIn: boolean;
@@ -39,7 +40,7 @@ const StudyGroupScreen = () => (
 const ScheduleScreen = () => (
   // eventDocs is 'PersonalEvents' or 'GlobalEvents'
   // eventCollection is 'Date' or useremail
-  <CalenderAgenda eventDocs='PersonalEvents' eventCollection='Person1'/>
+  <CalenderAgenda eventDocs='PersonalEvents' eventCollection='useremail@ucsd.edu'/>
 );
 
 const EventsScreen = () => (
@@ -51,13 +52,14 @@ const EventsScreen = () => (
 
 // TODO: Placeholder login screen, Replace with actual login screen
 const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const handleLogin = () => {
     // assume login is successful
     onLoginSuccess();
     navigation.navigate('bottomTab');
   }
 
-  const navigation = useNavigation(); 
+  // const navigation = useNavigation(); 
 
   return (
     <View style={{flex:1, margin:50}}>

@@ -8,9 +8,10 @@ interface TimeSelectorModalProps {
   closeModal: () => void;
   handleSaveEvent: (eventName: string, eventDescription: string, startTime: string, endTime: string) => void;
   event: EventData | null;
+  date: string; // Date in YYYY-MM-DD format
 }
 
-const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, closeModal, handleSaveEvent, event }) => {
+const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, closeModal, handleSaveEvent, event, date }) => {
   const [eventName, setEventName] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [startTime, setStartTime] = useState('00:00'); // Start time as HH:MM string
@@ -18,9 +19,9 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
 
   useEffect(() => {
     if (event) {
-        console.log(event.EndTime.toDate().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }));
       setEventName(event.EventName);
       setEventDescription(event.EventDescription);
+      // set the start and end time in HH:MM format based on date object
       setStartTime(event.StartTime.toDate().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })); // Convert to HH:MM format
       setEndTime(event.EndTime.toDate().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })); // Convert to HH:MM format
     }
@@ -43,6 +44,14 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
     const formattedTime = formatTime(value);
     setEndTime(formattedTime);
   };
+
+  const onSaveCallback = () => {
+    handleSaveEvent(eventName, eventDescription, startTime, endTime);
+    setEventName('');
+    setEventDescription('');
+    setStartTime('00:00');
+    setEndTime('00:00');
+  }
 
   return (
     <Modal visible={isModalVisible} animationType="slide" onRequestClose={closeModal}>
@@ -93,7 +102,7 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
         
 
         {/* Save and Cancel Buttons */}
-        <Button title="Save" onPress={() => handleSaveEvent(eventName, eventDescription, startTime, endTime)} />
+        <Button title="Save" onPress={() => onSaveCallback()} />
         <Button title="Cancel" onPress={closeModal} />
       </View>
     </Modal>

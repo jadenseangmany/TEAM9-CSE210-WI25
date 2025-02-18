@@ -5,14 +5,11 @@ import { AppContext } from '../../App';
 import { useContext } from 'react';
 import { AgendaSchedule } from 'react-native-calendars';
 
-// const db = getFirestore();
-
 const FirestoreService = {
   getEventsFromCollection: async (...paths: string[]) => {
     try {
       // Dynamically create the reference by joining the paths
       const ref = collection(db, paths.join('/'));
-
       const snapshot = await getDocs(ref);
 
       if (snapshot.empty) {
@@ -54,6 +51,19 @@ const FirestoreService = {
       return null;
     }
   },
+  updateDocField : async (fieldName: string, value: any, ...paths: string[]) => {
+    try {
+      // Construct reference for the document
+      const ref = doc(db, paths.join('/')); 
+      // Update the specific field or create the document with that field
+      await setDoc(ref, { [fieldName]: value }, { merge: true });
+  
+      return ref.id; 
+    } catch (error) {
+      console.error('Error adding or updating event field: ', error);
+      throw new Error('Error adding or updating event field');
+    }
+  },
   // Function to add a new event to Firestore
   addEventToCollection: async (eventData: EventData, ...paths: string[]) => {
     try {
@@ -61,6 +71,8 @@ const FirestoreService = {
       // Add a new document with auto-generated ID
       const docRef = await addDoc(ref, eventData);
       console.log("Document added with ID: ", docRef.id);
+      // update the document with the ID
+      await FirestoreService.updateDocField('id', docRef.id, ...paths, docRef.id);
       return docRef.id;
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -80,12 +92,9 @@ const FirestoreService = {
       throw new Error('Error updating event');
     }
   },
-  createTimestampFromTimeString : (timeString: string) => {
-    // Get the current date in YYYY-MM-DD format
-    const currentDate = new Date().toLocaleDateString('en-CA'); // 'en-CA' gives YYYY-MM-DD format
-    
+  createTimestampFromTimeString : (timeString: string, selectedDate: string) => {
     // Combine the current date with the time string
-    const dateTimeString = `${currentDate} ${timeString}`;
+    const dateTimeString = `${selectedDate} ${timeString}`;
     
     // Create a new Date object with the combined string
     const date = new Date(dateTimeString);
