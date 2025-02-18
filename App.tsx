@@ -1,10 +1,10 @@
 import React from 'react';
-import {Button, Text, View, StyleSheet} from 'react-native';
+import { Button, Text, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CalenderModule from './Components/Calenders/CalenderModule';
-import {useAuth0, Auth0Provider} from 'react-native-auth0';
+import CalendarModule from './Components/Calendars/CalendarModule';
+import { useAuth0, Auth0Provider } from 'react-native-auth0';
 
 const StudyGroupScreen = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -14,7 +14,7 @@ const StudyGroupScreen = () => (
 
 const ScheduleScreen = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <CalenderModule darkMode={false}/>
+    <CalendarModule darkMode={false} />
   </View>
 );
 
@@ -26,94 +26,96 @@ const EventsScreen = () => (
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
-  const {authorize, clearSession, user, error, isLoading} = useAuth0();
+const AuthContent = () => {
+  const { authorize, clearSession, user, error } = useAuth0();
 
-  const onLogin = async () => {
-    console.log("Login button pressed!")
+  const handleAuth = async (action: 'login' | 'logout') => {
     try {
-      await authorize();
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  
-  const onLogout = async () => {
-    console.log("Logout button pressed!")
-    try {
-      await clearSession();
-    } catch (e) {
-      console.log('Log out cancelled');
+      if (action === 'login') {
+        await authorize();
+      } else {
+        await clearSession();
+      }
+    } catch (err) {
+      console.error('Auth error:', err);
     }
   };
 
   const styles = StyleSheet.create({
     container: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF',
       padding: 20,
-      width: '100%',
-      minHeight: 50,
-      marginTop: 20,
+      backgroundColor: '#F5FCFF',
     },
-    rowContainer: {
-      flexDirection: 'row',    // 关键属性：水平排列
-      alignItems: 'center',    // 垂直居中
-      justifyContent: 'space-between', // 元素间距
-      width: '100%',           // 占满容器宽度
-      paddingHorizontal: 10,   // 水平内边距
+    authContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      marginBottom: 8,
     },
-    textStyle: {
-      marginRight: 15,         // 文字和按钮间距
-      flexShrink: 1,           // 允许文字收缩
-    }
+    statusText: {
+      flex: 1,
+      marginRight: 16,
+    },
   });
 
-  // if (isLoading) {
-  //   return <View style={styles.container}><Text>Loading</Text></View>;
-  // }
-
-  const loggedIn = user !== undefined && user !== null;
-  
   return (
-    <Auth0Provider domain={"dev-vzdbpbyhl1xapn6j.us.auth0.com"} clientId={"6bZf97q4yMUYoFLV92YlR919TSJRwbbC"}>
+    <View style={styles.container}>
+      <View style={styles.authContainer}>
+        <Text style={styles.statusText}>
+          {user ? `Logged in as ${user.name}` : 'Guest Mode'}
+        </Text>
+        <Button
+          title={user ? 'Log Out' : 'Log In'}
+          onPress={() => handleAuth(user ? 'logout' : 'login')}
+        />
+      </View>
+      {error && <Text>Error: {error.message}</Text>}
+    </View>
+  );
+};
+
+const AppNavigator = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          const iconMap = {
+            'Study Group': 'people-outline',
+            Schedule: 'calendar-outline',
+            Events: 'today-outline',
+          };
+          return (
+            <Ionicons
+              name={iconMap[route.name as keyof typeof iconMap]}
+              size={size}
+              color={color}
+            />
+          );
+        },
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+      })}
+    >
+      <Tab.Screen name="Study Group" component={StudyGroupScreen} />
+      <Tab.Screen name="Schedule" component={ScheduleScreen} />
+      <Tab.Screen name="Events" component={EventsScreen} />
+    </Tab.Navigator>
+  );
+};
+
+const App = () => {
+  return (
+    <Auth0Provider
+      domain="dev-vzdbpbyhl1xapn6j.us.auth0.com"
+      clientId="6bZf97q4yMUYoFLV92YlR919TSJRwbbC"
+    >
       <NavigationContainer>
-          <View style={styles.container}>
-            <View style={styles.rowContainer}>
-              <Text style={styles.textStyle}>
-                {loggedIn ? `Logged in as ${user?.name}` : "Not logged in"}
-              </Text>
-              <Button
-                onPress={loggedIn ? onLogout : onLogin}
-                title={loggedIn ? 'Log Out' : 'Log In'}
-              />
-            </View>
-            {error && <Text>{error.message}</Text>}
-          </View>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              // Mapping route names to Ionicons
-              const iconMap: { [key: string]: string } = {
-                'Study Group': 'people-outline',
-                Schedule: 'calendar-outline',
-                Events: 'today-outline',
-              };
-
-              const iconName = iconMap[route.name] || 'help-circle-outline'; // Default icon
-              return Ionicons ? <Ionicons name={iconName} size={size} color={color} /> : null;
-
-            },
-            tabBarActiveTintColor: 'tomato',
-            tabBarInactiveTintColor: 'gray',
-          })}
-        >
-          <Tab.Screen name="Study Group" component={StudyGroupScreen} />
-          <Tab.Screen name="Schedule!!!!!" component={ScheduleScreen} />
-          <Tab.Screen name="Events" component={EventsScreen} />
-        </Tab.Navigator>
+        <AuthContent />
+        <AppNavigator />
       </NavigationContainer>
     </Auth0Provider>
   );
-}
+};
+
+export default App;
