@@ -190,7 +190,7 @@ handleSaveEvent = async (
         );
     }
 
-    this.setState({ isModalVisible: false, eventToEdit: null, eventName: '', eventDescription: '', eventStartTime: '', eventEndTime: '' });
+    this.setState({ isModalVisible: false, eventToEdit: null });
     this.handleDateSelect(selectedDate);
 };
 

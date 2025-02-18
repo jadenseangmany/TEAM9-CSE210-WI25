@@ -25,29 +25,26 @@ export const AppContext = createContext<AppContextProps>({
   setGlobalEvents: () => {},
 });
 
-const GlobalEventsScreen = () => (
-  // eventDocs is 'PersonalEvents' or 'GlobalEvents'
-  // eventCollection is 'Date' or useremail
-  <CalenderAgenda eventDocs='GlobalEvents' eventCollection='Date'/>
-);
+const GlobalEventsScreen = React.memo(() => (
+  <CalenderAgenda eventDocs="GlobalEvents" eventCollection="Date" />
+));
 
-const StudyGroupScreen = () => (
+const StudyGroupScreen = React.memo(() => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>Study Group Screen</Text>
   </View>
-);
+));
 
-const ScheduleScreen = () => (
-  // eventDocs is 'PersonalEvents' or 'GlobalEvents'
-  // eventCollection is 'Date' or useremail
-  <CalenderAgenda eventDocs='PersonalEvents' eventCollection='useremail@ucsd.edu'/>
-);
+const ScheduleScreen = React.memo(() => (
+  <CalenderAgenda eventDocs="PersonalEvents" eventCollection="useremail@ucsd.edu" />
+));
 
-const EventsScreen = () => (
+const EventsScreen = React.memo(() => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>Events Screen</Text>
   </View>
-);
+));
+
 
 
 // TODO: Placeholder login screen, Replace with actual login screen
@@ -58,8 +55,6 @@ const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
     onLoginSuccess();
     navigation.navigate('bottomTab');
   }
-
-  // const navigation = useNavigation(); 
 
   return (
     <View style={{flex:1, margin:50}}>

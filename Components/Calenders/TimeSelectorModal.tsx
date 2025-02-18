@@ -79,7 +79,7 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
         <Slider
           minimumValue={0}
           maximumValue={1440} // 24 hours * 60 minutes = 1440 minutes
-          step={1}
+          step={10}
           value={parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1])} // Convert the HH:MM string to minutes
           onValueChange={handleStartTimeChange}
           style={styles.slider}
@@ -94,7 +94,7 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
         <Slider
           minimumValue={0}
           maximumValue={1440} // 24 hours * 60 minutes = 1440 minutes
-          step={1}
+          step={10}
           value={parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1])} // Convert the HH:MM string to minutes
           onValueChange={handleEndTimeChange}
           style={styles.slider}
