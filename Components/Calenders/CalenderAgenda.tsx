@@ -7,11 +7,12 @@ import TimeSelectorModal from './TimeSelectorModal';
 import { Timestamp } from 'firebase/firestore';
 
 interface Props {
+  rootCollection: string;  // 'Events' or 'Clubs'
   eventDocs: string;  // 'GlobalEvents' or 'PersonalEvents'
   eventCollection: string;    // 'Date' or useremail
 }
 
-interface State {
+interface AgendaState {
   items: AgendaSchedule;
   selectedDate: string;
   isModalVisible: boolean;
@@ -24,8 +25,8 @@ interface State {
 }
 
 
-export default class CalenderAgenda extends React.PureComponent<Props, State> {
-  state: State = {
+export default class CalenderAgenda extends React.PureComponent<Props, AgendaState> {
+  state: AgendaState = {
     items: {},
     selectedDate: '',
     isModalVisible: false,
@@ -48,7 +49,7 @@ export default class CalenderAgenda extends React.PureComponent<Props, State> {
   fetchEvents = async () => {
     try {
       const eventsList = await FirestoreService.getEventsFromCollection(
-        'Events', 
+        this.props.rootCollection, 
         this.props.eventDocs,
         this.props.eventCollection
       );
@@ -61,7 +62,7 @@ export default class CalenderAgenda extends React.PureComponent<Props, State> {
       const formattedEvents: AgendaSchedule = {};
       for (const eventDate of eventsList) {
         const dailyEvents = await FirestoreService.getEventsFromCollection(
-          'Events', this.props.eventDocs, this.props.eventCollection, eventDate.id, 'DailyAgenda'
+          this.props.rootCollection, this.props.eventDocs, this.props.eventCollection, eventDate.id, 'DailyAgenda'
         );
         
         dailyEvents.forEach(event => {
@@ -91,7 +92,7 @@ export default class CalenderAgenda extends React.PureComponent<Props, State> {
     this.setState({ selectedDate: date.normalize('NFC') });
     try {
       const eventsList = await FirestoreService.getEventsFromCollection(
-        'Events',
+        this.props.rootCollection,
         this.props.eventDocs,
         this.props.eventCollection,
         date,
@@ -161,7 +162,7 @@ handleSaveEvent = async (
     await FirestoreService.updateDocField(
       "lastUpdated", 
       timestamp,
-        'Events', 
+        this.props.rootCollection, 
         this.props.eventDocs, 
         this.props.eventCollection, 
         selectedDate, 
@@ -171,7 +172,7 @@ handleSaveEvent = async (
         await FirestoreService.updateEventInCollection(
             eventToEdit.id, 
             newEvent, 
-            'Events', 
+            this.props.rootCollection, 
             this.props.eventDocs, 
             this.props.eventCollection, 
             selectedDate, 
@@ -182,7 +183,7 @@ handleSaveEvent = async (
         // Add new event
         await FirestoreService.addEventToCollection(
             newEvent, 
-            'Events', 
+            this.props.rootCollection, 
             this.props.eventDocs, 
             this.props.eventCollection, 
             selectedDate, 
@@ -225,7 +226,7 @@ handleSaveEvent = async (
     try {
       await FirestoreService.deleteEventFromCollection(
         event.id, 
-        'Events', 
+        this.props.rootCollection, 
         this.props.eventDocs, 
         this.props.eventCollection, 
         selectedDate, 
@@ -244,7 +245,7 @@ handleSaveEvent = async (
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <Text>{item.EventName}</Text>
             <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
-            <Text>End: {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
+            <Text>End:   {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
           </View>
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <TouchableOpacity 

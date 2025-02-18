@@ -26,7 +26,7 @@ export const AppContext = createContext<AppContextProps>({
 });
 
 const GlobalEventsScreen = React.memo(() => (
-  <CalenderAgenda eventDocs="GlobalEvents" eventCollection="Date" />
+  <CalenderAgenda rootCollection='Events' eventDocs="GlobalEvents" eventCollection="Date" />
 ));
 
 const StudyGroupScreen = React.memo(() => (
@@ -36,7 +36,7 @@ const StudyGroupScreen = React.memo(() => (
 ));
 
 const ScheduleScreen = React.memo(() => (
-  <CalenderAgenda eventDocs="PersonalEvents" eventCollection="useremail@ucsd.edu" />
+  <CalenderAgenda rootCollection='Events' eventDocs="PersonalEvents" eventCollection="useremail@ucsd.edu" />
 ));
 
 const EventsScreen = React.memo(() => (
