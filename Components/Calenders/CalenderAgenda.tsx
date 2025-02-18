@@ -4,7 +4,7 @@ import { Agenda, DateData, AgendaEntry, AgendaSchedule } from 'react-native-cale
 import FirestoreService from '../Firestore/FirestoreService';
 import { EventData } from '../Types/Interfaces';
 import TimeSelectorModal from './TimeSelectorModal';
-
+import { Timestamp } from 'firebase/firestore';
 
 interface Props {
   eventDocs: string;  // 'GlobalEvents' or 'PersonalEvents'
@@ -41,7 +41,7 @@ export default class CalenderAgenda extends React.PureComponent<Props, State> {
     this.fetchEvents();
     this.setState({ 
         selectedDate: new Date().toLocaleDateString('en-CA'),
-        items: {[new Date().toLocaleDateString('en-CA')]: []}
+        // items: {[new Date().toLocaleDateString('en-CA')]: []}
     });
   }
 
@@ -53,28 +53,32 @@ export default class CalenderAgenda extends React.PureComponent<Props, State> {
         this.props.eventCollection
       );
       
-      console.log("eventList length", eventsList);
+      if (eventsList.length === 0) {
+        this.setState({ items: {} });
+        return;
+      }
+      
+      const formattedEvents: AgendaSchedule = {};
       for (const eventDate of eventsList) {
         const dailyEvents = await FirestoreService.getEventsFromCollection(
           'Events', this.props.eventDocs, this.props.eventCollection, eventDate.id, 'DailyAgenda'
         );
         
         dailyEvents.forEach(event => {
-          this.setState(prevState => ({
-            items: {
-              ...prevState.items,
-              [eventDate.id]: eventsList.length === 0 ? [] : eventsList.map(event => ({
-                ...event,
-                name: event.EventName,
-                height: 50, 
-                day: event.StartTime && event.StartTime.toDate
-                  ? new Date(event.StartTime.toDate()).toLocaleTimeString()
-                  : 'Invalid Time',
-              })),
-            },
-          }));
+          const startDate = event.StartTime instanceof Timestamp ? event.StartTime.toDate() : new Date(event.StartTime);
+          const dateKey = startDate.toLocaleDateString('en-CA');
+          
+          if (!formattedEvents[dateKey]) formattedEvents[dateKey] = [];
+          formattedEvents[dateKey].push({
+            ...event,
+            day: startDate.toLocaleTimeString(),
+            name: event.EventName,
+            height: 50, 
+          });
         });
       }
+      
+      this.setState({ items: formattedEvents });
       
       // this.setState({ items: formattedEvents });
     } catch (error) {
@@ -216,17 +220,46 @@ handleSaveEvent = async (
         this.handleDateSelect(this.state.selectedDate);
     }, 1000);
   };
-  
+  deleteEvent = async (event: EventData) => {
+    const { selectedDate } = this.state;
+    try {
+      await FirestoreService.deleteEventFromCollection(
+        event.id, 
+        'Events', 
+        this.props.eventDocs, 
+        this.props.eventCollection, 
+        selectedDate, 
+        'DailyAgenda'
+      );
+      this.handleDateSelect(selectedDate);
+    } catch (error) {
+      console.error('Error deleting event:', error);
+    }
+  }
+
   renderItem = (item: EventData) => {
     return (
-      <View style={styles.itemContainer}>
-        <Text>{item.EventName}</Text>
-        <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
-        <Text>End: {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
-        <TouchableOpacity onPress={() => this.openEditModal(item)}>
-          <Text>Edit</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={() => Alert.alert(item.EventName, item.EventDescription)}>
+        <View style={styles.itemContainer}>
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Text>{item.EventName}</Text>
+            <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
+            <Text>End: {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
+          </View>
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+            <TouchableOpacity 
+              style={{ backgroundColor: 'red', padding: 5, borderRadius: 5, margin: 5 }}
+              onPress={() => this.deleteEvent(item)}>
+              <Text style={{alignSelf: 'center'}}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={{ backgroundColor: 'skyblue', padding: 5, borderRadius: 5, margin: 5 }}
+              onPress={() => this.openEditModal(item)}>
+              <Text style={{alignSelf: 'center'}}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableOpacity>
     );
   };
   
@@ -305,6 +338,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: 'white',
     margin: 5,
     borderRadius: 15,

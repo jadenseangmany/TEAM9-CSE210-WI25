@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, getDocs, getDoc, setDoc, addDoc, Timestamp } from 'firebase/firestore';
+import { deleteDoc, collection, doc, getDocs, getDoc, setDoc, addDoc, Timestamp } from 'firebase/firestore';
 import { EventData } from '../Types/Interfaces';
 import { db, auth } from './FirebaseConfig';
 import { AppContext } from '../../App';
@@ -92,6 +92,23 @@ const FirestoreService = {
       throw new Error('Error updating event');
     }
   },
+
+  // Function to delete an event from Firestore
+  deleteEventFromCollection: async (eventId: string, ...paths: string[]) => {
+    try {
+      // Construct the document reference using the paths and eventId
+      const docRef = doc(db, paths.join('/'), eventId);
+  
+      // Delete the document using deleteDoc
+      await deleteDoc(docRef);
+  
+      console.log("Document successfully deleted!");
+    } catch (error) {
+      console.error('Error deleting document: ', error);
+      throw new Error('Error deleting event');
+    }
+  },
+
   createTimestampFromTimeString : (timeString: string, selectedDate: string) => {
     // Combine the current date with the time string
     const dateTimeString = `${selectedDate} ${timeString}`;
