@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Pressable 
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 // Types
 type EventStackParamList = {
@@ -37,13 +38,6 @@ const MOCK_EVENTS = [
   // Add more mock events as needed
 ];
 
-// Filter Button Component
-const FilterButton = ({ title, onPress }: { title: string; onPress: () => void }) => (
-  <TouchableOpacity style={styles.filterButton} onPress={onPress}>
-    <Text style={styles.filterButtonText}>{title}</Text>
-    <Ionicons name="chevron-down" size={16} color="#666" />
-  </TouchableOpacity>
-);
 
 // Event Card Component
 const EventCard = ({ event, onPress }: { event: typeof MOCK_EVENTS[0]; onPress: () => void }) => (
@@ -64,20 +58,101 @@ const EventsListScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
 
+  const [openDay, setOpenDay] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
+  const [openType, setOpenType] = useState(false);
+
+  // Add these items arrays in EventsListScreen component
+  const dayItems = [
+    { label: 'All', value: 'All' },
+    { label: 'Today', value: 'Today' },
+    { label: 'Tomorrow', value: 'Tomorrow' },
+    { label: 'This Week', value: 'This Week' },
+  ];
+
+  const categoryItems = [
+    { label: 'All', value: 'All' },
+    { label: 'Entertainment', value: 'Entertainment' },
+    { label: 'Academic', value: 'Academic' },
+    { label: 'Sports', value: 'Sports' },
+    { label: 'Social', value: 'Social' },
+    { label: 'Conference', value: 'Conference' },
+    { label: 'Workshop', value: 'Workshop' },
+  ];
+
+  const typeItems = [
+    { label: 'All', value: 'All' },
+    { label: 'Online', value: 'Online' },
+    { label: 'Outdoor', value: 'Outdoor' },
+    { label: 'Indoor', value: 'Indoor' },
+  ];
+
+  // Add this filtering logic before the return statement
+  const filteredEvents = MOCK_EVENTS.filter(event => {
+    const dayMatch = selectedDay === 'All' ? true : event.date === selectedDay; // You'll need to implement proper date filtering logic
+    const categoryMatch = selectedCategory === 'All' ? true : event.category === selectedCategory;
+    const typeMatch = selectedType === 'All' ? true : event.type === selectedType;
+    return dayMatch && categoryMatch && typeMatch;
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Events Nearby</Text>
       
       {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
-        <FilterButton title={`Day: ${selectedDay}`} onPress={() => {/* Implement filter logic */}} />
-        <FilterButton title={`Category: ${selectedCategory}`} onPress={() => {/* Implement filter logic */}} />
-        <FilterButton title={`Type: ${selectedType}`} onPress={() => {/* Implement filter logic */}} />
-      </ScrollView>
+      <View style={styles.filtersContainer}>
+      <View style={styles.dropdownContainer}>
+        <Text style={styles.filterLabel}>Day</Text>
+        <DropDownPicker
+          open={openDay}
+          value={selectedDay}
+          items={dayItems}
+          setOpen={setOpenDay}
+          setValue={setSelectedDay}
+          placeholder="Select Day"
+          style={styles.dropdown}
+          zIndex={3000}
+        />
+      </View>
+      <View style={styles.dropdownContainer}>
+        <Text style={styles.filterLabel}>Category</Text>
+        <DropDownPicker
+          open={openCategory}
+          value={selectedCategory}
+          items={categoryItems}
+          setOpen={setOpenCategory}
+          setValue={setSelectedCategory}
+          placeholder="Category"
+          style={styles.dropdown}
+          zIndex={2000}
+        />
+      </View>
+      <View style={styles.dropdownContainer}>
+        <Text style={styles.filterLabel}>Type</Text>
+        <DropDownPicker
+          open={openType}
+          value={selectedType}
+          items={typeItems}
+          setOpen={setOpenType}
+          setValue={setSelectedType}
+          placeholder="Type"
+          style={styles.dropdown}
+          zIndex={1000}
+        />
+      </View>
+    </View>
+      
 
       {/* Events List */}
       <ScrollView style={styles.eventsList}>
-        {MOCK_EVENTS.map(event => (
+        {/* {MOCK_EVENTS.map(event => (
+          <EventCard 
+            key={event.id} 
+            event={event} 
+            onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
+          />
+        ))} */}
+        {filteredEvents.map(event => (
           <EventCard 
             key={event.id} 
             event={event} 
@@ -134,25 +209,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  filtersContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-  },
-  filterButtonText: {
-    marginRight: 4,
-    color: '#666',
-  },
   eventsList: {
     flex: 1,
+  },
+  filtersContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    gap: 8,
+  },
+  dropdown: {
+    borderColor: '#ccc',
+    borderRadius: 8,
+    minHeight: 40,
+  },
+  filterLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#333',
+  },
+  selectedValue: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  dropdownContainer: {
+    flex: 1,
+    marginBottom: 8,
   },
   eventCard: {
     flexDirection: 'row',
