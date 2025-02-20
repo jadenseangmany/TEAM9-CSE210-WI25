@@ -30,9 +30,9 @@ const Stack = createStackNavigator(); // placement
 
 // Define screen configurations
 const screenConfig = [
-  { name: "Clubs", component: ClubsScreen, icon: "people-outline", hasSearchBar: true, placeholder: "Search Clubs" },
-  { name: "Schedule", component: ScheduleScreen, icon: "calendar-outline", hasSearchBar: false },
-  { name: "Events", component: EventsScreen, icon: "today-outline", hasSearchBar: true, placeholder: "Search Events" },
+  { name: 'Clubs', component: ClubsScreen, icon: 'people-outline', hasSearchBar: true, placeholder: 'Search Clubs' },
+  { name: 'Schedule', component: ScheduleScreen, icon: 'calendar-outline', hasSearchBar: false },
+  { name: 'Events', component: EventsScreen, icon: 'today-outline', hasSearchBar: true, placeholder: 'Search Events' },
 ];
 
 // Helper function to generate Stack Navigator for screens that need a search bar
@@ -40,7 +40,7 @@ const createScreenStack = (Component, hasSearchBar, placeholder) => {
   return () => (
     <Stack.Navigator>
       <Stack.Screen
-        name="Screen"
+        name='Screen'
         component={Component}
         options={{
           headerRight: hasSearchBar ? () => <CustomSearchBar placeholder={placeholder} /> : undefined,
@@ -60,7 +60,7 @@ export default function App() {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
               const screen = screenConfig.find(s => s.name === route.name);
-              return <Ionicons name={screen?.icon || "help-circle-outline"} size={size} color={color} />;
+              return <Ionicons name={screen?.icon || 'help-circle-outline'} size={size} color={color} />;
             },
             tabBarActiveTintColor: 'tomato',
             tabBarInactiveTintColor: 'gray',
@@ -92,9 +92,9 @@ export default function App() {
           tabBarInactiveTintColor: 'gray',
         })}
       >
-        <Tab.Screen name="Clubs" component={ClubsScreen} />
-        <Tab.Screen name="Schedule" component={ScheduleScreen} />
-        <Tab.Screen name="Events" component={EventsScreen} />
+        <Tab.Screen name='Clubs' component={ClubsScreen} />
+        <Tab.Screen name='Schedule' component={ScheduleScreen} />
+        <Tab.Screen name='Events' component={EventsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
