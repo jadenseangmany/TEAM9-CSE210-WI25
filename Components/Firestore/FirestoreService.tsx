@@ -1,9 +1,10 @@
-import { deleteDoc, collection, doc, getDocs, getDoc, setDoc, addDoc, Timestamp } from 'firebase/firestore';
+import { deleteDoc, collection, doc, getDocs, getDoc, setDoc, addDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { EventData } from '../Types/Interfaces';
 import { db, auth } from './FirebaseConfig';
 import { AppContext } from '../../App';
 import { useContext } from 'react';
 import { AgendaSchedule } from 'react-native-calendars';
+import { readFile } from 'react-native-fs';
 
 const FirestoreService = {
   getEventsFromCollection: async (...paths: string[]) => {
@@ -161,6 +162,36 @@ const FirestoreService = {
       setGlobalEvents(formattedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
+    }
+  },
+  uploadClubsToFirestore: async (clubsData: any) => {
+    try {
+        // Validate that the parsed data is an array
+        if (!Array.isArray(clubsData)) {
+            throw new Error('Invalid JSON format: Expected an array of objects.');
+        }
+
+        // Upload each club to Firestore
+        const batch = writeBatch(db);
+        const clubsCollection = collection(db, 'Clubs');
+
+        clubsData.forEach((club) => {
+            if (club.Name) {
+              const sanitizedClubName = club.Name.includes('/') 
+              ? club.Name.replace(/\//g, '_') 
+              : club.Name;
+                const docRef = doc(clubsCollection, sanitizedClubName);
+                batch.set(docRef, club);
+            } else {
+                console.warn('Skipping an entry due to missing "Name" field:', club);
+            }
+        });
+
+        // Commit the batch write to Firestore
+        await batch.commit();
+        console.log('All clubs uploaded successfully!');
+    } catch (error) {
+        console.error('Error uploading club data:', error);
     }
   },
 };

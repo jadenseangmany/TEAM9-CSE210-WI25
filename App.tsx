@@ -3,7 +3,6 @@ import { View, Text, Button, SafeAreaView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import GlobalEvents from './Components/GlobalEvents/GlobalEvents';
 import CalenderAgenda from './Components/Calenders/CalenderAgenda';
 import { AgendaSchedule } from 'react-native-calendars';
 import FirestoreService from './Components/Firestore/FirestoreService';
@@ -24,10 +23,6 @@ export const AppContext = createContext<AppContextProps>({
   globalEvents: {},
   setGlobalEvents: () => {},
 });
-
-const GlobalEventsScreen = React.memo(() => (
-  <CalenderAgenda rootCollection='Events' eventDocs="GlobalEvents" eventCollection="Date" />
-));
 
 const StudyGroupScreen = React.memo(() => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -85,7 +80,6 @@ function BottomTabs() {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Global Events" component={GlobalEventsScreen} />
       <Tab.Screen name="Study Group" component={StudyGroupScreen} />
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
       <Tab.Screen name="Events" component={EventsScreen} />
@@ -102,6 +96,9 @@ export default function App() {
   
   useEffect(() => {
     FirestoreService.fetchGlobalEvents();
+    // console.log("uploading clubs to firestore");
+    // const jsonFilePath = require('./club_scraper/ucsd_clubs.json'); // Already an object
+    // FirestoreService.uploadClubsToFirestore(jsonFilePath);
   }, []);
 
   return (
