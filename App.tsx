@@ -1,5 +1,5 @@
 import React, {useState, createContext, useEffect} from 'react';
-import { View, Text, Button, SafeAreaView } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
