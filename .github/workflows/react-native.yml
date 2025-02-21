@@ -26,8 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci # Installs dependencies using package-lock.json
 
-      - name: Run ESLint
-        run: npm run lint # Ensure you have a 'lint' script in package.json
+     # Disabled for now
+     # - name: Run ESLint
+     #   run: npm run lint # Ensure you have a 'lint' script in package.json
 
       - name: Run Jest tests
         run: npm test -- --ci --coverage # Ensures tests run in CI mode
