@@ -10,19 +10,20 @@
     "test": "jest"
   },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "^7.2.0",
-    "@react-navigation/native": "^7.0.14",
-    "@react-navigation/stack": "^7.1.1",
+    "@react-navigation/bottom-tabs": "^6.6.1",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/stack": "^6.4.1",
     "react": "18.3.1",
     "react-native": "0.77.0",
-    "react-native-calendars": "^1.1300.0",
-    "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "^2.12.0",
-    "react-native-paper": "^5.13.1",
     "react-native-reanimated": "^3.2.0",
-    "react-native-safe-area-context": "^5.2.0",
-    "react-native-screens": "^4.6.0",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-safe-area-context": "^5.1.0",
+    "react-native-screens": "^3.20.0",
+    "react-native-calendars": "^1.1300.0",
+    "react-native-vector-icons": "^10.2.0",
+    "react-native-dropdown-picker": "^5.4.6",
+    "react-native-paper": "^5.13.1",
+    "react-native-elements": "^3.4.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
