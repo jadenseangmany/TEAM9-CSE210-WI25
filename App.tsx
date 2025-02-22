@@ -63,12 +63,11 @@ const Tab = createBottomTabNavigator();
 function BottomTabs() {
   return (
     <Tab.Navigator
-      detachInactiveScreens={false} 
-      initialRouteName='Global Events'
+      detachInactiveScreens={true} 
+      initialRouteName='Schedule'
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           const iconMap: { [key: string]: string } = {
-            'Global Events': 'globe-outline',
             'Study Group': 'people-outline',
             Schedule: 'calendar-outline',
             Events: 'today-outline',
@@ -96,9 +95,6 @@ export default function App() {
   
   useEffect(() => {
     FirestoreService.fetchGlobalEvents();
-    // console.log("uploading clubs to firestore");
-    // const jsonFilePath = require('./club_scraper/ucsd_clubs.json'); // Already an object
-    // FirestoreService.uploadClubsToFirestore(jsonFilePath);
   }, []);
 
   return (

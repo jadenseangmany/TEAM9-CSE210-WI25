@@ -219,7 +219,7 @@ handleSaveEvent = async (
     console.log('loadItems called', day);
     setTimeout(() => {
         this.handleDateSelect(this.state.selectedDate);
-    }, 1000);
+    }, 2000);
   };
   deleteEvent = async (event: EventData) => {
     const { selectedDate } = this.state;
