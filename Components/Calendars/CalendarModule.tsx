@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TextInput, Button, Modal } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
-const CalenderModule: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
+const CalendarModule: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
   type dateType = {
     dateString: string;
     day: number;
@@ -195,4 +195,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CalenderModule;
+export default CalendarModule;
