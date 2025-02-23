@@ -1,13 +1,12 @@
 import React, {useState, createContext, useEffect} from 'react';
-import { View, Text, Button } from 'react-native';
+import CalenderAgenda from './Components/Calendars/CalenderAgenda';
+import { AgendaSchedule } from 'react-native-calendars';
+import FirestoreService from './Components/Firestore/FirestoreService';
+import { Button, Text, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CalenderAgenda from './Components/Calenders/CalenderAgenda';
-import { AgendaSchedule } from 'react-native-calendars';
-import FirestoreService from './Components/Firestore/FirestoreService';
-import {createNativeStackNavigator, NativeStackNavigationProp} from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import { useAuth0, Auth0Provider } from 'react-native-auth0';
 
 
 interface AppContextProps {
@@ -40,21 +39,74 @@ const EventsScreen = React.memo(() => (
   </View>
 ));
 
+
+const AuthContent = () => {
+  const { authorize, clearSession, user, error } = useAuth0();
+
+  const handleAuth = async (action: 'login' | 'logout') => {
+    try {
+      if (action === 'login') {
+        await authorize();
+      } else {
+        await clearSession();
+      }
+    } catch (err) {
+      console.error('Auth error:', err);
+    }
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+      backgroundColor: '#F5FCFF',
+    },
+    authContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      marginBottom: 8,
+    },
+    statusText: {
+      flex: 1,
+      marginRight: 16,
+    },
+  });
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.authContainer}>
+        <Text style={styles.statusText}>
+          {user ? `Logged in as ${user.name}` : 'Guest Mode'}
+        </Text>
+        <Button
+          title={user ? 'Log Out' : 'Log In'}
+          onPress={() => handleAuth(user ? 'logout' : 'login')}
+        />
+      </View>
+      {error && <Text>Error: {error.message}</Text>}
+    </View>
+  );
+};
+
 const Tab = createBottomTabNavigator();
-function BottomTabs() {
+const AppNavigator = () => {
   return (
     <Tab.Navigator
-      detachInactiveScreens={true} 
-      initialRouteName='Schedule'
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          const iconMap: { [key: string]: string } = {
+          const iconMap = {
             'Study Group': 'people-outline',
             Schedule: 'calendar-outline',
             Events: 'today-outline',
           };
-          const iconName = iconMap[route.name] || 'help-circle-outline';
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return (
+            <Ionicons
+              name={iconMap[route.name as keyof typeof iconMap]}
+              size={size}
+              color={color}
+            />
+          );
         },
         tabBarActiveTintColor: 'tomato',
         tabBarInactiveTintColor: 'gray',
@@ -65,12 +117,9 @@ function BottomTabs() {
       <Tab.Screen name="Events" component={EventsScreen} />
     </Tab.Navigator>
   );
-}
+};
 
-const Stack = createNativeStackNavigator();
-
-
-export default function App() {
+const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [globalEvents, setGlobalEvents] = useState<AgendaSchedule>({});
   
@@ -80,16 +129,17 @@ export default function App() {
 
   return (
     <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn, globalEvents,setGlobalEvents }}>
-      <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <Stack.Screen name="bottomTab" component={BottomTabs} />
-      </Stack.Navigator>
-      </NavigationContainer>
+      <Auth0Provider
+        domain="dev-vzdbpbyhl1xapn6j.us.auth0.com"
+        clientId="6bZf97q4yMUYoFLV92YlR919TSJRwbbC"
+      >
+        <NavigationContainer>
+          <AuthContent />
+          <AppNavigator />
+        </NavigationContainer>
+      </Auth0Provider>
     </AppContext.Provider>
-    
   );
-  
-}
+};
+
+export default App;
