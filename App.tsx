@@ -1,30 +1,44 @@
-import React from 'react';
+import React, {useState, createContext, useEffect} from 'react';
+import CalenderAgenda from './Components/Calendars/CalenderAgenda';
+import { AgendaSchedule } from 'react-native-calendars';
+import FirestoreService from './Components/Firestore/FirestoreService';
 import { Button, Text, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CalendarModule from './Components/Calendars/CalendarModule';
 import { useAuth0, Auth0Provider } from 'react-native-auth0';
 
-const StudyGroupScreen = () => (
+
+interface AppContextProps {
+  isLoggedIn: boolean;
+  setIsLoggedIn: (value: boolean) => void;
+  globalEvents: AgendaSchedule;
+  setGlobalEvents: (value: AgendaSchedule) => void;
+}
+
+export const AppContext = createContext<AppContextProps>({
+  isLoggedIn: false,
+  setIsLoggedIn: () => {},
+  globalEvents: {},
+  setGlobalEvents: () => {},
+});
+
+const StudyGroupScreen = React.memo(() => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>Study Group Screen</Text>
   </View>
-);
+));
 
-const ScheduleScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <CalendarModule darkMode={false} />
-  </View>
-);
+const ScheduleScreen = React.memo(() => (
+  <CalenderAgenda rootCollection='Events' eventDocs="PersonalEvents" eventCollection="useremail@ucsd.edu" />
+));
 
-const EventsScreen = () => (
+const EventsScreen = React.memo(() => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>Events Screen</Text>
   </View>
-);
+));
 
-const Tab = createBottomTabNavigator();
 
 const AuthContent = () => {
   const { authorize, clearSession, user, error } = useAuth0();
@@ -75,6 +89,7 @@ const AuthContent = () => {
   );
 };
 
+const Tab = createBottomTabNavigator();
 const AppNavigator = () => {
   return (
     <Tab.Navigator
@@ -105,16 +120,25 @@ const AppNavigator = () => {
 };
 
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [globalEvents, setGlobalEvents] = useState<AgendaSchedule>({});
+  
+  useEffect(() => {
+    FirestoreService.fetchGlobalEvents();
+  }, []);
+
   return (
-    <Auth0Provider
-      domain="dev-vzdbpbyhl1xapn6j.us.auth0.com"
-      clientId="6bZf97q4yMUYoFLV92YlR919TSJRwbbC"
-    >
-      <NavigationContainer>
-        <AuthContent />
-        <AppNavigator />
-      </NavigationContainer>
-    </Auth0Provider>
+    <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn, globalEvents,setGlobalEvents }}>
+      <Auth0Provider
+        domain="dev-vzdbpbyhl1xapn6j.us.auth0.com"
+        clientId="6bZf97q4yMUYoFLV92YlR919TSJRwbbC"
+      >
+        <NavigationContainer>
+          <AuthContent />
+          <AppNavigator />
+        </NavigationContainer>
+      </Auth0Provider>
+    </AppContext.Provider>
   );
 };
 
