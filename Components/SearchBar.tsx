@@ -1,25 +1,33 @@
-import React, { useState } from 'react';
-import { SearchBar } from 'react-native-elements';
+// SearchBar.tsx
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
 
-const CustomSearchBar = ({ placeholder }) => {
-  const [search, setSearch] = useState('');
+interface SearchBarProps {
+  query: string;
+  setQuery: (text: string) => void;
+}
 
+const SearchBar: React.FC<SearchBarProps> = ({ query, setQuery }) => {
   return (
-    <SearchBar
-      placeholder={placeholder || 'Search...'}
-      onChangeText={setSearch}
-      value={search}
-      containerStyle={{
-        backgroundColor: 'transparent',
-        borderBottomColor: 'transparent',
-        borderTopColor: 'transparent',
-        width: 200, // Adjust width as needed
-      }}
-      inputContainerStyle={{
-        backgroundColor: 'white',
-      }}
+    <TextInput
+      style={styles.input}
+      placeholder="Search events..."
+      value={query}
+      onChangeText={setQuery}
     />
   );
 };
 
-export default CustomSearchBar;
+const styles = StyleSheet.create({
+  input: {
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    fontSize: 16,
+  },
+});
+
+export default SearchBar;
