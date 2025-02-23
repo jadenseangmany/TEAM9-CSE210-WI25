@@ -40,25 +40,6 @@ const EventsScreen = React.memo(() => (
   </View>
 ));
 
-
-
-// TODO: Placeholder login screen, Replace with actual login screen
-const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  const handleLogin = () => {
-    // assume login is successful
-    onLoginSuccess();
-    navigation.navigate('bottomTab');
-  }
-
-  return (
-    <View style={{flex:1, margin:50}}>
-      <Text>Login Screen</Text>
-      <Button title="Login" onPress={handleLogin} />
-    </View>
-  );
-};
-
 const Tab = createBottomTabNavigator();
 function BottomTabs() {
   return (
@@ -104,7 +85,6 @@ export default function App() {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="Login" children={() => <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />}  />
         <Stack.Screen name="bottomTab" component={BottomTabs} />
       </Stack.Navigator>
       </NavigationContainer>
