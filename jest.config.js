@@ -5,5 +5,8 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-calendars)/)',
   ], 
-  preset: 'react-native',
+  preset: 'react-native', 'ts-jest',
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+  },
 };
