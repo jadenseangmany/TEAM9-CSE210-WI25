@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EventsListScreen from '../views/EventsListScreen';
 import EventDetailsScreen from '../views/EventDetailsScreen';
 import PostEventScreen from '../views/PostEventScreen';
@@ -14,7 +14,7 @@ export type EventStackParamList = {
   EditEventDetail: { eventId: string };
 };
 
-const Stack = createStackNavigator<EventStackParamList>();
+const Stack = createNativeStackNavigator<EventStackParamList>();
 
 const EventsNavigator = () => (
   <Stack.Navigator>
@@ -47,3 +47,4 @@ const EventsNavigator = () => (
 );
 
 export default EventsNavigator;
+

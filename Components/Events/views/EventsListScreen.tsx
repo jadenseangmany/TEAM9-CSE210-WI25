@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import EventCard from './EventCard';
 import { filterEvents } from '../controllers/EventsController';
@@ -10,7 +10,7 @@ import SearchBar from '../../SearchBar';
 import styles from '../styles';
 
 const EventsListScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<EventStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<EventStackParamList>>();
 
   // Filter state
   const [selectedDay, setSelectedDay] = useState('All');
@@ -64,7 +64,6 @@ const EventsListScreen = () => {
     }));
   }, [isFocused, selectedDay, selectedCategory, selectedType]);
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Events Nearby</Text>
@@ -115,35 +114,34 @@ const EventsListScreen = () => {
         </View>
       </View>
 
-        {/* Events List wrapped in a flex container */}
-        <View style={{ flex: 1 }}>
-          <ScrollView style={styles.eventsList}>
-            {events.map(event => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
-              />
-            ))}
-          </ScrollView>
-        </View>
+      {/* Events List wrapped in a flex container */}
+      <View style={{ flex: 1 }}>
+        <ScrollView style={styles.eventsList}>
+          {events.map(event => (
+            <EventCard
+              key={event.id}
+              event={event}
+              onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
+            />
+          ))}
+        </ScrollView>
+      </View>
 
-        {/* Action Buttons positioned at the bottom */}
-        <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate('PostEvent')}
-            >
-              <Text style={styles.buttonText}>POST EVENT</Text>
-            </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('EditEvent')}
-          >
-            <Text style={styles.buttonText}>EDIT EVENT</Text>
-          </TouchableOpacity>
-        </View>
-
+      {/* Action Buttons positioned at the bottom */}
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('PostEvent')}
+        >
+          <Text style={styles.buttonText}>POST EVENT</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('EditEvent')}
+        >
+          <Text style={styles.buttonText}>EDIT EVENT</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
