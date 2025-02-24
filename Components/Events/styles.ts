@@ -1,6 +1,8 @@
+// style.ts
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  // ... existing styles
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     top: 16,
-    left: 16,
+    right: 16, // assuming you want it on the upper right
     zIndex: 1,
   },
   detailsTitle: {
@@ -81,6 +83,54 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
   },
+  // New button styles
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 16,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 16,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    marginTop: 10,
+  },
+
 });
 
 export default styles;
+
