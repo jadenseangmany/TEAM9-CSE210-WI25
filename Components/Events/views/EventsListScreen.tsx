@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import EventCard from './EventCard';
 import { filterEvents } from '../controllers/EventsController';
 import { EventStackParamList } from '../navigation/EventsNavigator';
@@ -12,7 +12,7 @@ import styles from '../styles';
 const EventsListScreen = () => {
   const navigation = useNavigation<StackNavigationProp<EventStackParamList>>();
 
-  // Filter state (Model remains separate, controller handles the logic)
+  // Filter state
   const [selectedDay, setSelectedDay] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
@@ -48,12 +48,22 @@ const EventsListScreen = () => {
     { label: 'Indoor', value: 'Indoor' },
   ];
 
-  // Get filtered events from the controller
-  const filteredEvents = filterEvents({
+  const isFocused = useIsFocused();
+  // Local state for the events list (using the mutable event list via filterEvents)
+  const [events, setEvents] = useState(filterEvents({
     day: selectedDay,
     category: selectedCategory,
     type: selectedType,
-  });
+  }));
+
+  useEffect(() => {
+    setEvents(filterEvents({
+      day: selectedDay,
+      category: selectedCategory,
+      type: selectedType,
+    }));
+  }, [isFocused, selectedDay, selectedCategory, selectedType]);
+
 
   return (
     <View style={styles.container}>
@@ -61,6 +71,7 @@ const EventsListScreen = () => {
 
       {/* Search Bar */}
       <SearchBar query={searchQuery} setQuery={setSearchQuery} />
+
       {/* Filter Section */}
       <View style={styles.filtersContainer}>
         <View style={styles.dropdownContainer}>
@@ -104,19 +115,39 @@ const EventsListScreen = () => {
         </View>
       </View>
 
-      {/* Events List */}
-      <ScrollView style={styles.eventsList}>
-        {filteredEvents.map(event => (
-          <EventCard
-            key={event.id}
-            event={event}
-            onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
-          />
-        ))}
-      </ScrollView>
+        {/* Events List wrapped in a flex container */}
+        <View style={{ flex: 1 }}>
+          <ScrollView style={styles.eventsList}>
+            {events.map(event => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
+              />
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Action Buttons positioned at the bottom */}
+        <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('PostEvent')}
+            >
+              <Text style={styles.buttonText}>POST EVENT</Text>
+            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('EditEvent')}
+          >
+            <Text style={styles.buttonText}>EDIT EVENT</Text>
+          </TouchableOpacity>
+        </View>
+
     </View>
   );
 };
 
 export default EventsListScreen;
+
 
