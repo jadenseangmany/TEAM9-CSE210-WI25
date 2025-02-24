@@ -27,14 +27,6 @@ const EventDetailsScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Back Button */}
-    <TouchableOpacity
-      style={[styles.backButton, { right: 16 }]}
-      onPress={() => navigation.goBack()}
-    >
-      <Ionicons name="arrow-back" size={24} color="#000" />
-    </TouchableOpacity>
-
       {/* Event Image */}
       <Image source={{ uri: event.image }} style={styles.eventImage} />
 
