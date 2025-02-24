@@ -26,17 +26,17 @@ const EventsNavigator = () => (
     <Stack.Screen
       name="EventDetails"
       component={EventDetailsScreen}
-      options={{ headerShown: false }}
+      options={{ headerTitle: "Event Details" }}
     />
     <Stack.Screen
       name="PostEvent"
       component={PostEventScreen}
-      options={{ headerShown: false }}
+      options={{ headerTitle: "Post Event" }}
     />
     <Stack.Screen
       name="EditEvent"
       component={EditEventScreen}
-      options={{ headerShown: false }}
+      options={{ headerTitle: "Your Event List" }}
     />
     <Stack.Screen
       name="EditEventDetail"
