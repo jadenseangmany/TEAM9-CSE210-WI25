@@ -5,5 +5,9 @@
     "declarations.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ]
+  ],
+  "compilerOptions": {
+    // other options
+    "jsx": "react"
+  }
 }
