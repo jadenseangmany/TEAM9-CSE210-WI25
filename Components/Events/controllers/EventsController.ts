@@ -5,6 +5,7 @@ export interface FilterCriteria {
   day: string;
   category: string;
   type: string;
+  searchQuery: string;
 }
 
 export const filterEvents = (filters: FilterCriteria): Event[] => {
@@ -12,6 +13,7 @@ export const filterEvents = (filters: FilterCriteria): Event[] => {
     const dayMatch = filters.day === 'All' ? true : event.date === filters.day; // Implement proper date filtering as needed
     const categoryMatch = filters.category === 'All' ? true : event.category === filters.category;
     const typeMatch = filters.type === 'All' ? true : event.type === filters.type;
-    return dayMatch && categoryMatch && typeMatch;
+    const searchMatch = event.title.toLowerCase().includes(filters.searchQuery.toLowerCase()); // Use searchQuery for filtering
+    return dayMatch && categoryMatch && typeMatch && searchMatch;
   });
 };

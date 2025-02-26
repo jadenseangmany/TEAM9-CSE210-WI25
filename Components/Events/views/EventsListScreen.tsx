@@ -54,6 +54,7 @@ const EventsListScreen = () => {
     day: selectedDay,
     category: selectedCategory,
     type: selectedType,
+    searchQuery: searchQuery,
   }));
 
   useEffect(() => {
@@ -61,8 +62,9 @@ const EventsListScreen = () => {
       day: selectedDay,
       category: selectedCategory,
       type: selectedType,
+      searchQuery: searchQuery,
     }));
-  }, [isFocused, selectedDay, selectedCategory, selectedType]);
+  }, [isFocused, selectedDay, selectedCategory, selectedType, searchQuery]);
 
   return (
     <View style={styles.container}>
