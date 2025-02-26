@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth0, Auth0Provider } from 'react-native-auth0';
+import {ClubInfoTag} from './Components/ClubInfoComponent';
 
 
 interface AppContextProps {
@@ -26,6 +27,7 @@ export const AppContext = createContext<AppContextProps>({
 const StudyGroupScreen = React.memo(() => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>Study Group Screen</Text>
+    <ClubInfoTag clubName='4N01 Dance Team'/>
   </View>
 ));
 
