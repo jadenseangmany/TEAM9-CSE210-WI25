@@ -194,6 +194,27 @@ const FirestoreService = {
         console.error('Error uploading club data:', error);
     }
   },
+
+  getClubInfoByName : async (clubName: string) => {
+    try {
+      if (!clubName) {
+          throw new Error('Club name is required.');
+      }
+
+      const docRef = doc(db, 'Clubs', clubName);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+          console.log(`No club found with the name: ${clubName}`);
+          return { error: 'Club info missing!' };
+      }
+
+      return { id: docSnap.id, ...docSnap.data() };
+  } catch (error) {
+      console.error('Error fetching club info:', error);
+      return { error: 'Fail to get club info!' };
+  }
+  },
 };
 
 export default FirestoreService;
