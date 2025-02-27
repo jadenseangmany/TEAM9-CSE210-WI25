@@ -1,10 +1,9 @@
 import { deleteDoc, collection, doc, getDocs, getDoc, setDoc, addDoc, Timestamp, writeBatch } from 'firebase/firestore';
-import { EventData } from '../Types/Interfaces';
-import { db, auth } from './FirebaseConfig';
-import { AppContext } from '../../App';
+import { EventData } from '../Components/Types/Interfaces';
+import { db, auth } from '../Configurations/FirebaseConfig';
+import { AppContext } from '../Context/AppContext';
 import { useContext } from 'react';
 import { AgendaSchedule } from 'react-native-calendars';
-import { readFile } from 'react-native-fs';
 
 const FirestoreService = {
   getEventsFromCollection: async (...paths: string[]) => {

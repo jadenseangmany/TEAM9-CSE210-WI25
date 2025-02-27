@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, Text, View, TouchableOpacity, SafeAreaView, RefreshControl} from 'react-native';
 import { Agenda, DateData, AgendaEntry, AgendaSchedule } from 'react-native-calendars';
-import FirestoreService from '../Firestore/FirestoreService';
+import FirestoreService from '../../Services/FirestoreService';
 import { EventData } from '../Types/Interfaces';
 import TimeSelectorModal from './TimeSelectorModal';
 import { Timestamp } from 'firebase/firestore';
@@ -219,7 +219,7 @@ handleSaveEvent = async (
     console.log('loadItems called', day);
     setTimeout(() => {
         this.handleDateSelect(this.state.selectedDate);
-    }, 2000);
+    }, 5000);
   };
   deleteEvent = async (event: EventData) => {
     const { selectedDate } = this.state;

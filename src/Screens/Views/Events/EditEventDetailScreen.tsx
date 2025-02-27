@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { EventStackParamList } from '../navigation/EventsNavigator';
-import { eventList, updateEvent, deleteEvent } from '../models/EventModel';
-import styles from '../styles';
+import { EventStackParamList } from '../../../Navigation/EventsNavigator';
+import { eventList, updateEvent, deleteEvent } from '../../../Components/EventModel';
+import styles from './styles';
+import { NavigationProp } from '@react-navigation/native';
 
 const EditEventDetailScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<EventStackParamList>>();
   const route = useRoute<RouteProp<EventStackParamList, 'EditEventDetail'>>();
   const { eventId } = route.params;
 

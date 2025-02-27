@@ -113,24 +113,17 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 16,
   },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   deleteButton: {
     backgroundColor: 'red',
     marginTop: 10,
   },
-
+  // TODO: Add styles for the event details screen
+  eventDetails: {
+    padding: 16,
+  },
+  eventDescription: {
+    marginBottom: 16,
+  },
 });
 
 export default styles;
-

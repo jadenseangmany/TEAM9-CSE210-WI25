@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, ActivityIndicator } from 'react-native';
-import FirestoreService from './Firestore/FirestoreService';
+import FirestoreService from '../../../Services/FirestoreService';
 
 
 interface ClubInfoTagProps {
@@ -128,11 +128,14 @@ const styles = StyleSheet.create({
     tag: {
         padding: 10,
         backgroundColor: '#4CAF50',
+        height: 50,
         borderRadius: 20,
+        justifyContent: 'center',
     },
     tagText: {
         color: 'white',
         fontWeight: 'bold',
+        textAlign: 'center',
     },
     modalBackground: {
         flex: 1,

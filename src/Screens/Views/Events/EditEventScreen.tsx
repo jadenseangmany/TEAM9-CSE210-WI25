@@ -1,13 +1,14 @@
 // EditEventScreen.tsx
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { eventList } from '../models/EventModel';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import {EventStackParamList} from '../../../Navigation/EventsNavigator';
+import { eventList } from '../../../Components/EventModel';
 import EventCard from './EventCard';
-import styles from '../styles';
+import styles from './styles';
 
 const EditEventScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<EventStackParamList>>();
 
   // Filter events where isMine is true
   const myEvents = eventList.filter(event => event.isMine);

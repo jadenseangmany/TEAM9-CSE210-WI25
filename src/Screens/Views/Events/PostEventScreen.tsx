@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addEvent } from '../models/EventModel';
-import styles from '../styles';
+import { addEvent } from '../../../Components/EventModel';
+import styles from './styles';
 
 const PostEventScreen = () => {
   const navigation = useNavigation();

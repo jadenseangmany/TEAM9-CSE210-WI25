@@ -1,4 +1,9 @@
 PODS:
+  - A0Auth0 (4.4.0):
+    - Auth0 (= 2.7.2)
+    - JWTDecode (= 3.1.0)
+    - React-Core
+    - SimpleKeychain (= 1.1.0)
   - abseil/algorithm (1.20240116.2):
     - abseil/algorithm/algorithm (= 1.20240116.2)
     - abseil/algorithm/container (= 1.20240116.2)
@@ -1145,6 +1150,9 @@ PODS:
     - abseil/meta/type_traits
     - abseil/xcprivacy
   - abseil/xcprivacy (1.20240116.2)
+  - Auth0 (2.7.2):
+    - JWTDecode (~> 3.1)
+    - SimpleKeychain (~> 1.1)
   - boost (1.84.0)
   - BoringSSL-GRPC (0.0.36):
     - BoringSSL-GRPC/Implementation (= 0.0.36)
@@ -1160,7 +1168,7 @@ PODS:
   - Firebase/Firestore (11.8.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 11.8.0)
-  - FirebaseAppCheckInterop (11.8.0)
+  - FirebaseAppCheckInterop (11.9.0)
   - FirebaseCore (11.8.1):
     - FirebaseCoreInternal (~> 11.8.0)
     - GoogleUtilities/Environment (~> 8.0)
@@ -1189,7 +1197,7 @@ PODS:
     - gRPC-Core (~> 1.65.0)
     - leveldb-library (~> 1.22)
     - nanopb (~> 3.30910.0)
-  - FirebaseSharedSwift (11.8.0)
+  - FirebaseSharedSwift (11.9.0)
   - fmt (11.0.2)
   - glog (0.3.5)
   - GoogleUtilities/Environment (8.0.2):
@@ -1293,6 +1301,7 @@ PODS:
   - hermes-engine (0.77.0):
     - hermes-engine/Pre-built (= 0.77.0)
   - hermes-engine/Pre-built (0.77.0)
+  - JWTDecode (3.1.0)
   - leveldb-library (1.22.6)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
@@ -2906,8 +2915,6 @@ PODS:
     - Firebase/Firestore (= 11.8.0)
     - React-Core
     - RNFBApp
-  - RNFS (2.20.0):
-    - React-Core
   - RNGestureHandler (2.23.1):
     - DoubleConversion
     - glog
@@ -3017,7 +3024,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.6.0):
+  - RNScreens (4.9.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3038,9 +3045,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.6.0)
+    - RNScreens/common (= 4.9.1)
     - Yoga
-  - RNScreens/common (4.6.0):
+  - RNScreens/common (4.9.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3083,10 +3090,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - SimpleKeychain (1.1.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
+  - A0Auth0 (from `../node_modules/react-native-auth0`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
@@ -3158,7 +3167,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
-  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -3168,6 +3176,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - abseil
+    - Auth0
     - BoringSSL-GRPC
     - Firebase
     - FirebaseAppCheckInterop
@@ -3180,11 +3189,15 @@ SPEC REPOS:
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
+    - JWTDecode
     - leveldb-library
     - nanopb
+    - SimpleKeychain
     - SocketRocket
 
 EXTERNAL SOURCES:
+  A0Auth0:
+    :path: "../node_modules/react-native-auth0"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -3324,8 +3337,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
-  RNFS:
-    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -3338,26 +3349,29 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  A0Auth0: d2bbd7266bc3cfc85ea1c97d7f777b7299f4add6
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
+  Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 2bc03a5cf64e29c611bbc5d7eb9d9f7431f37ee6
   Firebase: d80354ed7f6df5f9aca55e9eb47cc4b634735eaf
-  FirebaseAppCheckInterop: 7bf86d55a2b7e9bd91464120eba3e52e4b63b2e2
+  FirebaseAppCheckInterop: 9226f7217b43e99dfa0bc9f674ad8108cef89feb
   FirebaseCore: 99fe0c4b44a39f37d99e6404e02009d2db5d718d
   FirebaseCoreExtension: 3d3f2017a00d06e09ab4ebe065391b0bb642565e
   FirebaseCoreInternal: df24ce5af28864660ecbd13596fc8dd3a8c34629
   FirebaseFirestore: 563a4ab1a65e2858f05e150bb4c31b0f8f79248b
   FirebaseFirestoreInternal: 8c5921c360a70e447bfeefb245f450e8b50e750b
-  FirebaseSharedSwift: 672954eac7b141d6954fab9a32d45d6b1d922df8
+  FirebaseSharedSwift: 574e6a5602afe4397a55c8d4f767382d620285de
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
   gRPC-Core: a27c294d6149e1c39a7d173527119cfbc3375ce4
   hermes-engine: 1f783c3d53940aed0d2c84586f0b7a85ab7827ef
+  JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
@@ -3422,11 +3436,11 @@ SPEC CHECKSUMS:
   ReactCommon: a02340b2a1a76f3703298a4680bb03277ca87440
   RNFBApp: 399a4d5f7b39af8a35cd4a8089e6b46f05d65cf2
   RNFBFirestore: 12a92942148b33bc1c2db037b102b198372e502c
-  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: a5c5e76f0056a7115b839686934740b6639c7cec
   RNReanimated: 5c268cff742e86416974907d8596b173683e9ce6
-  RNScreens: 6a595af73186eb6b85dfd82ded47d67989ae14b5
+  RNScreens: 77f93ec55b749c49549b447527ebf78e990125f3
   RNVectorIcons: f3e9354fca73876447d183d4b18955e52cd3695c
+  SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: c34725819ab0a5962e85455b9e56679b306910ee
 

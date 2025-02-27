@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, Image } from 'react-native';
-import { Event } from '../models/EventModel';
-import styles from '../styles';
+import { Event } from '../../../Components/EventModel';
+import styles from './styles';
 
 interface EventCardProps {
   event: Event;

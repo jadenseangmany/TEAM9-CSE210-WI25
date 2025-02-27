@@ -3,9 +3,9 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { EventStackParamList } from '../navigation/EventsNavigator';
-import { eventList } from '../models/EventModel';
-import styles from '../styles';
+import { EventStackParamList } from '../../../Navigation/EventsNavigator';
+import { eventList } from '../../../Components/EventModel';
+import styles from './styles';
 
 const EventDetailsScreen = () => {
   const navigation = useNavigation();

@@ -4,10 +4,10 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import EventCard from './EventCard';
-import { filterEvents } from '../controllers/EventsController';
-import { EventStackParamList } from '../navigation/EventsNavigator';
-import SearchBar from '../../SearchBar';
-import styles from '../styles';
+import { filterEvents } from '../../../Controller/EventsController';
+import { EventStackParamList } from '../../../Navigation/EventsNavigator';
+import SearchBar from '../../../Components/SearchBar';
+import styles from './styles';
 
 const EventsListScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<EventStackParamList>>();
