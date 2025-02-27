@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth0, Auth0Provider } from 'react-native-auth0';
 import {ClubInfoTag} from './Components/ClubInfoComponent';
+import EventsNavigator from './Components/Events/navigation/EventsNavigator';
 
 
 interface AppContextProps {
@@ -116,7 +117,7 @@ const AppNavigator = () => {
     >
       <Tab.Screen name="Study Group" component={StudyGroupScreen} />
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
-      <Tab.Screen name="Events" component={EventsScreen} />
+      <Tab.Screen name="Events" component={EventsNavigator} />
     </Tab.Navigator>
   );
 };
@@ -124,7 +125,7 @@ const AppNavigator = () => {
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [globalEvents, setGlobalEvents] = useState<AgendaSchedule>({});
-  
+
   useEffect(() => {
     FirestoreService.fetchGlobalEvents();
   }, []);
