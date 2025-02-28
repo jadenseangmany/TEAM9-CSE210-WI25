@@ -30,8 +30,8 @@ jobs:
       # - name: Run Jest tests
       #   run: npm test -- --ci --coverage # Ensures tests run in CI mode
       - name: Run Jest tests
-        run: npm test -- --ci --coverage || echo "Tests failed but continuing build"
-        continue-on-error: true  # Remove this once tests are fixed
+        run: npm test -- --ci --coverage # || echo "Tests failed but continuing build"
+        # continue-on-error: true  # Remove this once tests are fixed
 
   android-build:
     name: Build Android App
