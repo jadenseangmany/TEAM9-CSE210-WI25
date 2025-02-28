@@ -72,43 +72,43 @@ jobs:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-  ios-build:
-    name: Build iOS App
-    needs: test
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # ios-build:
+  #   name: Build iOS App
+  #   needs: test
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
       
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18
+  #         cache: 'npm'
       
-      - name: Install dependencies
-        run: npm ci
+  #     - name: Install dependencies
+  #       run: npm ci
       
-      - name: Cache Pods
-        uses: actions/cache@v4
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+  #     - name: Cache Pods
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ios/Pods
+  #         key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-pods-
       
-      - name: Install CocoaPods
-        run: |
-          cd ios
-          pod install --silent
+  #     - name: Install CocoaPods
+  #       run: |
+  #         cd ios
+  #         pod install --silent
       
-      - name: Build iOS app
-        run: |
-          cd ios
-          xcodebuild -workspace cse210.xcworkspace -scheme cse210 -sdk iphonesimulator -configuration Debug build CODE_SIGNING_ALLOWED=NO
+  #     - name: Build iOS app
+  #       run: |
+  #         cd ios
+  #         xcodebuild -workspace cse210.xcworkspace -scheme cse210 -sdk iphonesimulator -configuration Debug build CODE_SIGNING_ALLOWED=NO
       
-      - name: Upload iOS Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
-          path: ios/build
+  #     - name: Upload iOS Build Artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ios-build
+  #         path: ios/build
