@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addEvent } from '../../../Components/EventModel';
+import { addEvent } from '../../../Services/EventService';
 import styles from './styles';
 
 const PostEventScreen = () => {

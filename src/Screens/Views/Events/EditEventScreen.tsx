@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import {EventStackParamList} from '../../../Navigation/EventsNavigator';
-import { eventList } from '../../../Components/EventModel';
+import { eventList } from '../../../Services/EventService';
 import EventCard from './EventCard';
 import styles from './styles';
 

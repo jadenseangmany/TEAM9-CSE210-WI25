@@ -7,7 +7,7 @@ import { AppContext } from '../Context/AppContext';
 import AppNavigator from '../Navigation/AppNavigator';
 import LoginScreen from '../Screens/LoginScreen';
 import { SafeAreaView } from 'react-native';
-import {ClubList} from '../Components/ClubModel';
+import {ClubList} from '../Services/ClubService';
 
 const AppScreen = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);

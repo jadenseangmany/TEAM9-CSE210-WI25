@@ -1,5 +1,5 @@
 // EventsController.ts
-import { Event, eventList } from '../Components/EventModel';
+import { Event, eventList } from '../Services/EventService';
 
 export interface FilterCriteria {
   day: string;

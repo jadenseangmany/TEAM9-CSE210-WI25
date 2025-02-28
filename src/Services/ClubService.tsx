@@ -1,5 +1,5 @@
 import React from 'react';
-import FirestoreService from '../Services/FirestoreService';
+import FirestoreService from './FirestoreService';
 
 // Get all Clubs return as a list
 export const ClubList = () => { 
