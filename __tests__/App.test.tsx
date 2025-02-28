@@ -25,6 +25,6 @@ describe('App', () => {
     
     // Once dependencies are fixed:
     const { getByText } = render(<App />);
-    expect(getByText('Welcome')).toBeTruthy();
+    expect(getByText('Events')).toBeTruthy();
   });
 });
