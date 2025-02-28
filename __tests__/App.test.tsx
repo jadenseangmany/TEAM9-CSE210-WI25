@@ -48,7 +48,7 @@ jest.mock('../src/Controller/EventsController', () => ({
 }));
 
 jest.mock('../src/Components/SearchBar', () => 'SearchBar');
-jest.mock('./EventCard', () => 'EventCard');
+jest.mock('../src/Screens/Views/Events/EventCard', () => 'EventCard');
 
 describe('EventsListScreen', () => {
   const mockNavigation = {
