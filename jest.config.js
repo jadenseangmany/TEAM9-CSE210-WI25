@@ -11,9 +11,12 @@ module.exports = {
   },
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|webp|svg|png)$': '<rootDir>/__mocks__/fileMock.js',
+    'react-native-auth0': '<rootDir>/__mocks__/react-native-auth0.js',
   },
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-calendars)/)',
   ],
-  testEnvironment: 'node'
+  setupFiles: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jsdom', 
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
