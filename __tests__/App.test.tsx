@@ -43,11 +43,11 @@ jest.mock('@react-navigation/native', () => ({
   useIsFocused: jest.fn(),
 }));
 
-jest.mock('../../../Controller/EventsController', () => ({
+jest.mock('../src/Controller/EventsController', () => ({
   filterEvents: jest.fn(),
 }));
 
-jest.mock('../../../Components/SearchBar', () => 'SearchBar');
+jest.mock('../src/Components/SearchBar', () => 'SearchBar');
 jest.mock('./EventCard', () => 'EventCard');
 
 describe('EventsListScreen', () => {
