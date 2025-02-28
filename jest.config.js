@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'react-native',
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': 'babel-jest',
   },
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|webp|svg|png)$': '<rootDir>/__mocks__/fileMock.js',
