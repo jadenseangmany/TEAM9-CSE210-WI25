@@ -1,69 +1,56 @@
-// EventModel.ts
-
-export interface Event {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  attendees: number;
-  image: string;
-  category: string;
-  type: string;
-  isMine: boolean; // Indicates if the event is posted by myself
-}
+import { Event } from '../Components/Types/Interfaces';
 
 export let eventList: Event[] = [
   {
     id: '1',
     title: 'Campus Comedy Night',
-    date: '2025-02-16',
-    time: '8:00 PM',
-    attendees: 45,
-    image: 'https://picsum.photos/100/100',
+    when: '2025-02-16T20:00:00',
+    location: 'Main Campus Theater',
+    userId: 'user1',
+    club: 'Comedy Club',
     category: 'Entertainment',
-    type: 'Social',
-    isMine: false,
+    type: 'indoor',
+    image: 'https://picsum.photos/100/100',
+    details: 'Enjoy a night of laughs and performances!',
   },
   {
     id: '2',
     title: 'AI Research Symposium',
-    date: '2025-02-17',
-    time: '2:00 PM',
-    attendees: 120,
-    image: 'https://picsum.photos/100/100',
+    when: '2025-02-17T14:00:00',
+    location: 'Engineering Building',
+    userId: 'user2',
+    club: 'Tech Club',
     category: 'Academic',
-    type: 'Conference',
-    isMine: true,
+    type: 'indoor',
+    image: 'https://picsum.photos/100/100',
+    details: 'Join researchers discussing the future of AI.',
   },
 ];
 
-// Function to add a new event
-export const addEvent = (newEvent: Omit<Event, 'id' | 'image' | 'isMine'>) => {
+export const addEvent = (newEvent: Omit<Event, 'id' | 'image'>): void => {
   const event: Event = {
-    id: String(new Date().getTime()), // Unique id based on timestamp
+    id: String(new Date().getTime()), // Simple unique id based on timestamp
     title: newEvent.title,
-    date: newEvent.date,
-    time: newEvent.time,
-    attendees: newEvent.attendees,
+    when: newEvent.when,
+    location: newEvent.location,
+    userId: newEvent.userId,
+    club: newEvent.club,
     category: newEvent.category,
     type: newEvent.type,
     image: 'https://picsum.photos/100/100', // Default image
-    isMine: true,
+    details: newEvent.details,
   };
   eventList.push(event);
 };
 
-// NEW: Function to update an existing event
-export const updateEvent = (id: string, updatedFields: Omit<Event, 'id' | 'image' | 'isMine'>) => {
+export const updateEvent = (id: string, updatedFields: Omit<Event, 'id' | 'image'>): void => {
   const index = eventList.findIndex(event => event.id === id);
   if (index !== -1) {
-    eventList[index] = {
-      ...eventList[index],
-      ...updatedFields,
-    };
+    eventList[index] = { ...eventList[index], ...updatedFields };
   }
 };
 
-export const deleteEvent = (id: string) => {
+export const deleteEvent = (id: string): void => {
   eventList = eventList.filter(event => event.id !== id);
 };
+
