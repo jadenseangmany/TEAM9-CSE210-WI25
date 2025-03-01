@@ -1,4 +1,4 @@
-// EventDetailsScreen.tsx
+// src/Screens/Views/Events/EventDetailsScreen.tsx
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -33,21 +33,32 @@ const EventDetailsScreen = () => {
       {/* Event Title */}
       <Text style={styles.eventTitle}>{event.title}</Text>
 
-      {/* Event Date and Time */}
+      {/* When (Date/Time) */}
       <Text style={styles.eventDetails}>
-        {event.date} at {event.time}
+        When: {event.when}
       </Text>
 
-      {/* Attendee Count */}
-      <Text style={styles.eventDetails}>{event.attendees} attending</Text>
+      {/* Location */}
+      <Text style={styles.eventDetails}>
+        Location: {event.location}
+      </Text>
+
+      {/* Club */}
+      <Text style={styles.eventDetails}>
+        Club: {event.club}
+      </Text>
 
       {/* Category and Type */}
-      <Text style={styles.eventDetails}>Category: {event.category}</Text>
-      <Text style={styles.eventDetails}>Type: {event.type}</Text>
+      <Text style={styles.eventDetails}>
+        Category: {event.category}
+      </Text>
+      <Text style={styles.eventDetails}>
+        Type: {event.type}
+      </Text>
 
-      {/* Additional Description */}
+      {/* Additional Description / Details */}
       <Text style={styles.eventDescription}>
-        Join us for an exciting event: {event.title}. This event promises engaging sessions and networking opportunities. Don't miss out!
+        {event.details}
       </Text>
     </ScrollView>
   );

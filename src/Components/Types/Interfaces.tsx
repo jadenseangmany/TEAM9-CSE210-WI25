@@ -1,10 +1,15 @@
-export interface EventData {
-    id: string;
-    EventName: string;
-    EventDescription: string;
-    StartTime: any; 
-    EndTime: any;
-  }
+export interface Event {
+  id: string;          // auto-assigned by the db
+  title: string;
+  when: string;        // date/time as an ISO string (e.g., "2025-02-16T20:00:00")
+  location: string;
+  userId: string;
+  club: string;
+  category: string;
+  type: string;        // e.g., "online", "outdoor", or "indoor"
+  image: string;
+  details: string;
+}
 
 export interface CalendarModuleProps {
     schedules: {

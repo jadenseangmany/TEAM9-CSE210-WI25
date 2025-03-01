@@ -1,8 +1,8 @@
-// EditEventScreen.tsx
+// src/Screens/Views/Events/EditEventScreen.tsx
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import {EventStackParamList} from '../../../Navigation/EventsNavigator';
+import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import { eventList } from '../../../Services/EventService';
 import EventCard from './EventCard';
 import styles from './styles';
@@ -10,8 +10,11 @@ import styles from './styles';
 const EditEventScreen = () => {
   const navigation = useNavigation<NavigationProp<EventStackParamList>>();
 
-  // Filter events where isMine is true
-  const myEvents = eventList.filter(event => event.isMine);
+  // Define a mock local user id
+  const localUserId = 'localUser123';
+
+  // Filter events where the event's userId matches the local user id
+  const myEvents = eventList.filter(event => event.userId === localUserId);
 
   return (
     <View style={styles.container}>

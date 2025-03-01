@@ -1,4 +1,3 @@
-// PostEventScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -8,29 +7,18 @@ import styles from './styles';
 const PostEventScreen = () => {
   const navigation = useNavigation();
 
-  // State for input fields
+  // New state variables for the new attributes
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [attendees, setAttendees] = useState('');
+  const [when, setWhen] = useState('');
+  const [location, setLocation] = useState('');
+  const [userId, setUserId] = useState('');
+  const [club, setClub] = useState('');
   const [category, setCategory] = useState('');
   const [type, setType] = useState('');
+  const [details, setDetails] = useState('');
 
   const handlePostEvent = () => {
-    // Convert attendees to a number
-    const numAttendees = parseInt(attendees, 10) || 0;
-
-    // Add the new event to the event list
-    addEvent({
-      title,
-      date,
-      time,
-      attendees: numAttendees,
-      category,
-      type,
-    });
-
-    // Navigate back to the EventsList screen
+    addEvent({ title, when, location, userId, club, category, type, details });
     navigation.goBack();
   };
 
@@ -46,22 +34,27 @@ const PostEventScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Date (YYYY-MM-DD)"
-        value={date}
-        onChangeText={setDate}
+        placeholder="When (YYYY-MM-DDTHH:MM:SS)"
+        value={when}
+        onChangeText={setWhen}
       />
       <TextInput
         style={styles.input}
-        placeholder="Time (e.g., 8:00 PM)"
-        value={time}
-        onChangeText={setTime}
+        placeholder="Location"
+        value={location}
+        onChangeText={setLocation}
       />
       <TextInput
         style={styles.input}
-        placeholder="Attendees"
-        value={attendees}
-        onChangeText={setAttendees}
-        keyboardType="numeric"
+        placeholder="User ID"
+        value={userId}
+        onChangeText={setUserId}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Club"
+        value={club}
+        onChangeText={setClub}
       />
       <TextInput
         style={styles.input}
@@ -71,11 +64,16 @@ const PostEventScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Type"
+        placeholder="Type (online/outdoor/indoor)"
         value={type}
         onChangeText={setType}
       />
-
+      <TextInput
+        style={styles.input}
+        placeholder="Details"
+        value={details}
+        onChangeText={setDetails}
+      />
       <TouchableOpacity style={styles.button} onPress={handlePostEvent}>
         <Text style={styles.buttonText}>Submit Event</Text>
       </TouchableOpacity>
@@ -84,3 +82,4 @@ const PostEventScreen = () => {
 };
 
 export default PostEventScreen;
+
