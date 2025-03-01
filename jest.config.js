@@ -1,12 +1,8 @@
 module.exports = {
   preset: 'react-native',
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-  },
-  moduleNameMapper: {
-    '\\.(jpg|jpeg|png|gif|webp|svg|png)$': '<rootDir>/__mocks__/fileMock.js',
-  },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-calendars)/)',
+    'node_modules/(?!((jest-)?react-native|@react-native|@react-navigation|@react-native-firebase|@react-native-community|react-native-calendars|react-native-dropdown-picker|react-native-vector-icons|firebase|react-native-auth0)/)',
   ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
