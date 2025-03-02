@@ -1,11 +1,10 @@
-// EditEventDetailScreen.tsx
+// src/Screens/Views/Events/EditEventDetailScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import { eventList, updateEvent, deleteEvent } from '../../../Services/EventService';
 import styles from './styles';
-import { NavigationProp } from '@react-navigation/native';
 
 const EditEventDetailScreen = () => {
   const navigation = useNavigation<NavigationProp<EventStackParamList>>();
@@ -15,29 +14,39 @@ const EditEventDetailScreen = () => {
   // Find the event to edit
   const event = eventList.find(e => e.id === eventId);
 
-  // Pre-populated state for editing
-  const [title, setTitle] = useState(event?.title || '');
-  const [date, setDate] = useState(event?.date || '');
-  const [time, setTime] = useState(event?.time || '');
-  const [attendees, setAttendees] = useState(event ? String(event.attendees) : '');
-  const [category, setCategory] = useState(event?.category || '');
-  const [type, setType] = useState(event?.type || '');
+  if (!event) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Event not found.</Text>
+      </View>
+    );
+  }
+
+  // Pre-populated state for editing, based on the new event structure
+  const [title, setTitle] = useState(event.title);
+  const [when, setWhen] = useState(event.when);
+  const [location, setLocation] = useState(event.location);
+  const [userId, setUserId] = useState(event.userId);
+  const [club, setClub] = useState(event.club);
+  const [category, setCategory] = useState(event.category);
+  const [type, setType] = useState(event.type);
+  const [details, setDetails] = useState(event.details);
 
   const handleUpdateEvent = () => {
-    const numAttendees = parseInt(attendees, 10) || 0;
     updateEvent(eventId, {
       title,
-      date,
-      time,
-      attendees: numAttendees,
+      when,
+      location,
+      userId,
+      club,
       category,
       type,
+      details,
     });
     // Navigate back to the main event list screen after updating
     navigation.navigate('EventsList');
   };
 
-  // NEW: Function to delete the event
   const handleDeleteEvent = () => {
     deleteEvent(eventId);
     // Navigate back to the main event list screen after deleting
@@ -56,22 +65,27 @@ const EditEventDetailScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Date (YYYY-MM-DD)"
-        value={date}
-        onChangeText={setDate}
+        placeholder="When (YYYY-MM-DDTHH:MM:SS)"
+        value={when}
+        onChangeText={setWhen}
       />
       <TextInput
         style={styles.input}
-        placeholder="Time (e.g., 8:00 PM)"
-        value={time}
-        onChangeText={setTime}
+        placeholder="Location"
+        value={location}
+        onChangeText={setLocation}
       />
       <TextInput
         style={styles.input}
-        placeholder="Attendees"
-        value={attendees}
-        onChangeText={setAttendees}
-        keyboardType="numeric"
+        placeholder="User ID"
+        value={userId}
+        onChangeText={setUserId}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Club"
+        value={club}
+        onChangeText={setClub}
       />
       <TextInput
         style={styles.input}
@@ -81,16 +95,21 @@ const EditEventDetailScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Type"
+        placeholder="Type (online/outdoor/indoor)"
         value={type}
         onChangeText={setType}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Details"
+        value={details}
+        onChangeText={setDetails}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleUpdateEvent}>
         <Text style={styles.buttonText}>Submit Event</Text>
       </TouchableOpacity>
 
-      {/* NEW: Red Delete Event Button */}
       <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDeleteEvent}>
         <Text style={styles.buttonText}>Delete Event</Text>
       </TouchableOpacity>
@@ -99,3 +118,4 @@ const EditEventDetailScreen = () => {
 };
 
 export default EditEventDetailScreen;
+
