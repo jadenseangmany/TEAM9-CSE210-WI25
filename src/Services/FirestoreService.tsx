@@ -66,8 +66,11 @@ const FirestoreService = {
   },
   // Function to add a new event to Firestore
   addEventToCollection: async (eventData: EventData, ...paths: string[]) => {
+    console.log("--------------------------------------------------");
+    console.log("TEST: Adding event with data:", eventData);
     try {
       const ref = collection(db, paths.join('/'));
+      console.log("TEST: ref", ref);
       // Add a new document with auto-generated ID
       const docRef = await addDoc(ref, eventData);
       console.log("Document added with ID: ", docRef.id);
@@ -126,6 +129,7 @@ const FirestoreService = {
   },
 
   fetchGlobalEvents : async () => {
+    console.log("Fetching global events...");
     const { globalEvents, setGlobalEvents } = useContext(AppContext);
     try {
       const eventsList = await FirestoreService.getEventsFromCollection(

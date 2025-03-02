@@ -136,64 +136,64 @@ export default class CalenderAgenda extends React.PureComponent<Props, AgendaSta
     this.setState({ isModalVisible: false, eventToEdit: null });
   };
 
-handleSaveEvent = async (
-    eventName: string, 
-    eventDescription: string, 
-    eventStartTime: string, 
-    eventEndTime: string
-): Promise<void> => {
-    const { eventToEdit, selectedDate } = this.state;
-    console.log("all input", eventName, eventDescription, eventStartTime, eventEndTime);
-    if (!eventName || !eventStartTime || !eventEndTime) {
-        Alert.alert('All fields are required');
-        return;
-    }
-    console.log("time", new Date(eventStartTime));
-    const newEvent: EventData = {
-        id: eventToEdit ? eventToEdit.id : '', // Provide a default id or generate a new one
-        EventName: eventName,
-        EventDescription: eventDescription,
-        StartTime: FirestoreService.createTimestampFromTimeString(eventStartTime, selectedDate),
-        EndTime: FirestoreService.createTimestampFromTimeString(eventEndTime, selectedDate),
-    };
+  handleSaveEvent = async (
+      eventName: string, 
+      eventDescription: string, 
+      eventStartTime: string, 
+      eventEndTime: string
+  ): Promise<void> => {
+      const { eventToEdit, selectedDate } = this.state;
+      console.log("all input", eventName, eventDescription, eventStartTime, eventEndTime);
+      if (!eventName || !eventStartTime || !eventEndTime) {
+          Alert.alert('All fields are required');
+          return;
+      }
+      console.log("time", new Date(eventStartTime));
+      const newEvent: EventData = {
+          id: eventToEdit ? eventToEdit.id : '', // Provide a default id or generate a new one
+          EventName: eventName,
+          EventDescription: eventDescription,
+          StartTime: FirestoreService.createTimestampFromTimeString(eventStartTime, selectedDate),
+          EndTime: FirestoreService.createTimestampFromTimeString(eventEndTime, selectedDate),
+      };
 
-    const timestamp = FirestoreService.createTimestampFromTimeString(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), selectedDate);
-    // Update lastUpdated field
-    await FirestoreService.updateDocField(
-      "lastUpdated", 
-      timestamp,
-        this.props.rootCollection, 
-        this.props.eventDocs, 
-        this.props.eventCollection, 
-        selectedDate, 
-    );
-    if (eventToEdit) {
-        // Update existing event
-        await FirestoreService.updateEventInCollection(
-            eventToEdit.id, 
-            newEvent, 
-            this.props.rootCollection, 
-            this.props.eventDocs, 
-            this.props.eventCollection, 
-            selectedDate, 
-            'DailyAgenda'
-            
-        );
-    } else {        
-        // Add new event
-        await FirestoreService.addEventToCollection(
-            newEvent, 
-            this.props.rootCollection, 
-            this.props.eventDocs, 
-            this.props.eventCollection, 
-            selectedDate, 
-            'DailyAgenda'
-        );
-    }
+      const timestamp = FirestoreService.createTimestampFromTimeString(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), selectedDate);
+      // Update lastUpdated field
+      await FirestoreService.updateDocField(
+        "lastUpdated", 
+        timestamp,
+          this.props.rootCollection, 
+          this.props.eventDocs, 
+          this.props.eventCollection, 
+          selectedDate, 
+      );
+      if (eventToEdit) {
+          // Update existing event
+          await FirestoreService.updateEventInCollection(
+              eventToEdit.id, 
+              newEvent, 
+              this.props.rootCollection, 
+              this.props.eventDocs, 
+              this.props.eventCollection, 
+              selectedDate, 
+              'DailyAgenda'
+              
+          );
+      } else {        
+          // Add new event
+          await FirestoreService.addEventToCollection(
+              newEvent, 
+              this.props.rootCollection, 
+              this.props.eventDocs, 
+              this.props.eventCollection, 
+              selectedDate, 
+              'DailyAgenda'
+          );
+      }
 
-    this.setState({ isModalVisible: false, eventToEdit: null });
-    this.handleDateSelect(selectedDate);
-};
+      this.setState({ isModalVisible: false, eventToEdit: null });
+      this.handleDateSelect(selectedDate);
+  };
 
   renderEmptyDate = () => {
     return (

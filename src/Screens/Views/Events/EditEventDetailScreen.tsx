@@ -6,6 +6,9 @@ import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import { eventList, updateEvent, deleteEvent } from '../../../Services/EventService';
 import styles from './styles';
 import { NavigationProp } from '@react-navigation/native';
+import FirestoreService from '../../../Services/FirestoreService';
+import { EventData } from '../../../Components/Types/Interfaces';
+import { Timestamp } from '@react-native-firebase/firestore/lib/modular/Timestamp';
 
 const EditEventDetailScreen = () => {
   const navigation = useNavigation<NavigationProp<EventStackParamList>>();
@@ -24,6 +27,8 @@ const EditEventDetailScreen = () => {
   const [type, setType] = useState(event?.type || '');
 
   const handleUpdateEvent = () => {
+    console.log("--------------------------------------------------");
+    console.log("handleUpdateEvent");
     const numAttendees = parseInt(attendees, 10) || 0;
     updateEvent(eventId, {
       title,
@@ -33,6 +38,15 @@ const EditEventDetailScreen = () => {
       category,
       type,
     });
+    // TODO: Update the event to personal calendar
+    const newEvent: EventData = {
+      id: eventId,
+      EventName: title,
+      EventDescription: 'description',
+      StartTime: Timestamp.fromDate(new Date()), // current time for testing
+      EndTime: Timestamp.fromDate(new Date(new Date().getTime() + 60 * 60 * 1000)), // current time + 1h for testing
+    };
+    FirestoreService.updateEventInCollection(eventId, newEvent);
     // Navigate back to the main event list screen after updating
     navigation.navigate('EventsList');
   };
