@@ -129,7 +129,7 @@ const FirestoreService = {
     const { globalEvents, setGlobalEvents } = useContext(AppContext);
     try {
       const eventsList = await FirestoreService.getEventsFromCollection(
-        'Events', 
+        'Events',
         'GlobalEvents',
         'Date'
       );
@@ -137,27 +137,27 @@ const FirestoreService = {
         setGlobalEvents({});
         return;
       }
-      
+
       const formattedEvents: AgendaSchedule = {};
       for (const eventDate of eventsList) {
         const dailyEvents = await FirestoreService.getEventsFromCollection(
           'Events', 'GlobalEvents', 'Date', eventDate.id, 'DailyAgenda'
         );
-        
+
         dailyEvents.forEach(event => {
           const startDate = event.StartTime instanceof Timestamp ? event.StartTime.toDate() : new Date(event.StartTime);
           const dateKey = startDate.toLocaleDateString('en-CA');
-          
+
           if (!formattedEvents[dateKey]) formattedEvents[dateKey] = [];
           formattedEvents[dateKey].push({
             ...event,
             day: startDate.toLocaleTimeString(),
             name: event.EventName,
-            height: 50, 
+            height: 50,
           });
         });
       }
-      
+
       setGlobalEvents(formattedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);

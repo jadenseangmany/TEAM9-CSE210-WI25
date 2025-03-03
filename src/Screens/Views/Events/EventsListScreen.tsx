@@ -4,33 +4,36 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import EventCard from './EventCard';
-import { filterEvents } from '../../../Controller/EventsController';
-import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import SearchBar from '../../../Components/SearchBar';
 import styles from './styles';
+import { Event } from '../../../Components/Types/Interfaces';
+import { fetchEvents } from '../../../Services/EventService';
+import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 
 const EventsListScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<EventStackParamList>>();
+  const isFocused = useIsFocused();
 
-  // Filter state
+  // Local state for events fetched from Firestore
+  const [events, setEvents] = useState<Event[]>([]);
+  // (You can still include your filter states if needed)
   const [selectedDay, setSelectedDay] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [openDay, setOpenDay] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [openType, setOpenType] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState('');
 
-  // Dropdown items for filters
+  // (Dropdown items remain unchanged)
   const dayItems = [
     { label: 'All', value: 'All' },
     { label: 'Today', value: 'Today' },
     { label: 'Tomorrow', value: 'Tomorrow' },
     { label: 'This Week', value: 'This Week' },
   ];
-
   const categoryItems = [
     { label: 'All', value: 'All' },
     { label: 'Entertainment', value: 'Entertainment' },
@@ -40,7 +43,6 @@ const EventsListScreen = () => {
     { label: 'Conference', value: 'Conference' },
     { label: 'Workshop', value: 'Workshop' },
   ];
-
   const typeItems = [
     { label: 'All', value: 'All' },
     { label: 'Online', value: 'Online' },
@@ -48,75 +50,67 @@ const EventsListScreen = () => {
     { label: 'Indoor', value: 'Indoor' },
   ];
 
-  const isFocused = useIsFocused();
-  // Local state for the events list (using the mutable event list via filterEvents)
-  const [events, setEvents] = useState(filterEvents({
-    day: selectedDay,
-    category: selectedCategory,
-    type: selectedType,
-    searchQuery: searchQuery,
-  }));
-
+  // Fetch events whenever the screen is focused
   useEffect(() => {
-    setEvents(filterEvents({
-      day: selectedDay,
-      category: selectedCategory,
-      type: selectedType,
-      searchQuery: searchQuery,
-    }));
-  }, [isFocused, selectedDay, selectedCategory, selectedType, searchQuery]);
+    const loadEvents = async () => {
+      try {
+        const eventsData = await fetchEvents();
+        // (Optionally, you can filter the events based on selectedDay, category, type, etc.)
+        setEvents(eventsData);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+    loadEvents();
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Events Nearby</Text>
-
-      {/* Search Bar */}
       <SearchBar query={searchQuery} setQuery={setSearchQuery} />
+        <View style={styles.filtersContainer}>
+          <View style={styles.dropdownContainer}>
+            <Text style={styles.filterLabel}>Day</Text>
+            <DropDownPicker
+              open={openDay}
+              value={selectedDay}
+              items={dayItems}
+              setOpen={setOpenDay}
+              setValue={setSelectedDay}
+              placeholder="Select Day"
+              style={styles.dropdown}
+              zIndex={3000}
+            />
+          </View>
+          <View style={styles.dropdownContainer}>
+            <Text style={styles.filterLabel}>Category</Text>
+            <DropDownPicker
+              open={openCategory}
+              value={selectedCategory}
+              items={categoryItems}
+              setOpen={setOpenCategory}
+              setValue={setSelectedCategory}
+              placeholder="Category"
+              style={styles.dropdown}
+              zIndex={2000}
+            />
+          </View>
+          <View style={styles.dropdownContainer}>
+            <Text style={styles.filterLabel}>Type</Text>
+            <DropDownPicker
+              open={openType}
+              value={selectedType}
+              items={typeItems}
+              setOpen={setOpenType}
+              setValue={setSelectedType}
+              placeholder="Type"
+              style={styles.dropdown}
+              zIndex={1000}
+            />
+          </View>
+        </View>
 
-      {/* Filter Section */}
-      <View style={styles.filtersContainer}>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.filterLabel}>Day</Text>
-          <DropDownPicker
-            open={openDay}
-            value={selectedDay}
-            items={dayItems}
-            setOpen={setOpenDay}
-            setValue={setSelectedDay}
-            placeholder="Select Day"
-            style={styles.dropdown}
-            zIndex={3000}
-          />
-        </View>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.filterLabel}>Category</Text>
-          <DropDownPicker
-            open={openCategory}
-            value={selectedCategory}
-            items={categoryItems}
-            setOpen={setOpenCategory}
-            setValue={setSelectedCategory}
-            placeholder="Category"
-            style={styles.dropdown}
-            zIndex={2000}
-          />
-        </View>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.filterLabel}>Type</Text>
-          <DropDownPicker
-            open={openType}
-            value={selectedType}
-            items={typeItems}
-            setOpen={setOpenType}
-            setValue={setSelectedType}
-            placeholder="Type"
-            style={styles.dropdown}
-            zIndex={1000}
-          />
-        </View>
-      </View>
 
-      {/* Events List wrapped in a flex container */}
       <View style={{ flex: 1 }}>
         <ScrollView style={styles.eventsList}>
           {events.map(event => (
@@ -128,19 +122,11 @@ const EventsListScreen = () => {
           ))}
         </ScrollView>
       </View>
-
-      {/* Action Buttons positioned at the bottom */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('PostEvent')}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PostEvent')}>
           <Text style={styles.buttonText}>POST EVENT</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('EditEvent')}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditEvent')}>
           <Text style={styles.buttonText}>EDIT EVENT</Text>
         </TouchableOpacity>
       </View>
