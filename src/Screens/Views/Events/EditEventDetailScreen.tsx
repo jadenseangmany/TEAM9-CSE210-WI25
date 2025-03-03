@@ -1,62 +1,85 @@
 // src/Screens/Views/Events/EditEventDetailScreen.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
-import { eventList, updateEvent, deleteEvent } from '../../../Services/EventService';
+import FirestoreService from '../../../Services/FirestoreService';
+import { updateEvent, deleteEvent } from '../../../Services/EventService';
 import styles from './styles';
+
+type EditEventDetailRouteProp = RouteProp<EventStackParamList, 'EditEventDetail'>;
 
 const EditEventDetailScreen = () => {
   const navigation = useNavigation<NavigationProp<EventStackParamList>>();
-  const route = useRoute<RouteProp<EventStackParamList, 'EditEventDetail'>>();
+  const route = useRoute<EditEventDetailRouteProp>();
   const { eventId } = route.params;
 
-  // Find the event to edit
-  const event = eventList.find(e => e.id === eventId);
+  // Local state for event fields
+  const [title, setTitle] = useState('');
+  const [when, setWhen] = useState('');
+  const [location, setLocation] = useState('');
+  const [userId, setUserId] = useState('');
+  const [club, setClub] = useState('');
+  const [category, setCategory] = useState('');
+  const [type, setType] = useState('');
+  const [details, setDetails] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  if (!event) {
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        // Build the path "Events/GlobalEvents/Data/{eventId}"
+        const fetchedEvent = await FirestoreService.getEventById('Events', 'GlobalEvents', 'Data', eventId);
+        if (fetchedEvent) {
+          setTitle(fetchedEvent.title);
+          setWhen(fetchedEvent.when);
+          setLocation(fetchedEvent.location);
+          setUserId(fetchedEvent.userId);
+          setClub(fetchedEvent.club);
+          setCategory(fetchedEvent.category);
+          setType(fetchedEvent.type);
+          setDetails(fetchedEvent.details);
+        } else {
+          console.error('Event not found');
+        }
+      } catch (error) {
+        console.error('Error fetching event for editing:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvent();
+  }, [eventId]);
+
+  if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Event not found.</Text>
+        <Text>Loading event data...</Text>
       </View>
     );
   }
 
-  // Pre-populated state for editing, based on the new event structure
-  const [title, setTitle] = useState(event.title);
-  const [when, setWhen] = useState(event.when);
-  const [location, setLocation] = useState(event.location);
-  const [userId, setUserId] = useState(event.userId);
-  const [club, setClub] = useState(event.club);
-  const [category, setCategory] = useState(event.category);
-  const [type, setType] = useState(event.type);
-  const [details, setDetails] = useState(event.details);
-
-  const handleUpdateEvent = () => {
-    updateEvent(eventId, {
-      title,
-      when,
-      location,
-      userId,
-      club,
-      category,
-      type,
-      details,
-    });
-    // Navigate back to the main event list screen after updating
-    navigation.navigate('EventsList');
+  const handleUpdateEvent = async () => {
+    try {
+      await updateEvent(eventId, { title, when, location, userId, club, category, type, details });
+      navigation.navigate('EventsList');
+    } catch (error) {
+      console.error('Error updating event:', error);
+    }
   };
 
-  const handleDeleteEvent = () => {
-    deleteEvent(eventId);
-    // Navigate back to the main event list screen after deleting
-    navigation.navigate('EventsList');
+  const handleDeleteEvent = async () => {
+    try {
+      await deleteEvent(eventId);
+      navigation.navigate('EventsList');
+    } catch (error) {
+      console.error('Error deleting event:', error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Edit Event</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Title"
@@ -105,11 +128,9 @@ const EditEventDetailScreen = () => {
         value={details}
         onChangeText={setDetails}
       />
-
       <TouchableOpacity style={styles.button} onPress={handleUpdateEvent}>
         <Text style={styles.buttonText}>Submit Event</Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDeleteEvent}>
         <Text style={styles.buttonText}>Delete Event</Text>
       </TouchableOpacity>
@@ -118,4 +139,5 @@ const EditEventDetailScreen = () => {
 };
 
 export default EditEventDetailScreen;
+
 

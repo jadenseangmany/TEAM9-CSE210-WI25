@@ -1,56 +1,34 @@
+// src/Services/EventService.ts
+import FirestoreService from './FirestoreService';
 import { Event } from '../Components/Types/Interfaces';
 
-export let eventList: Event[] = [
-  {
-    id: '1',
-    title: 'Campus Comedy Night',
-    when: '2025-02-16T20:00:00',
-    location: 'Main Campus Theater',
-    userId: 'user1',
-    club: 'Comedy Club',
-    category: 'Entertainment',
-    type: 'indoor',
-    image: 'https://picsum.photos/100/100',
-    details: 'Enjoy a night of laughs and performances!',
-  },
-  {
-    id: '2',
-    title: 'AI Research Symposium',
-    when: '2025-02-17T14:00:00',
-    location: 'Engineering Building',
-    userId: 'user2',
-    club: 'Tech Club',
-    category: 'Academic',
-    type: 'indoor',
-    image: 'https://picsum.photos/100/100',
-    details: 'Join researchers discussing the future of AI.',
-  },
-];
+// Fetch all events from Firestore
+export const fetchEvents = async (): Promise<Event[]> => {
+  // Adjust the collection path as needed (here we assume 'Events/GlobalEvents')
+  const events = await FirestoreService.getEventsFromCollection('Events', 'GlobalEvents', 'Data');
+  return events;
+};
 
-export const addEvent = (newEvent: Omit<Event, 'id' | 'image'>): void => {
-  const event: Event = {
-    id: String(new Date().getTime()), // Simple unique id based on timestamp
-    title: newEvent.title,
-    when: newEvent.when,
-    location: newEvent.location,
-    userId: newEvent.userId,
-    club: newEvent.club,
-    category: newEvent.category,
-    type: newEvent.type,
+// Add a new event to Firestore
+export const addEvent = async (eventData: Omit<Event, 'id' | 'image'>): Promise<string> => {
+  // Combine the provided data with a default image
+  const eventWithImage: Event = {
+    ...eventData,
     image: 'https://picsum.photos/100/100', // Default image
-    details: newEvent.details,
+    id: '', // Temporary; will be updated by FirestoreService.addEventToCollection
   };
-  eventList.push(event);
+  const newId = await FirestoreService.addEventToCollection(eventWithImage, 'Events', 'GlobalEvents', 'Data');
+  return newId;
 };
 
-export const updateEvent = (id: string, updatedFields: Omit<Event, 'id' | 'image'>): void => {
-  const index = eventList.findIndex(event => event.id === id);
-  if (index !== -1) {
-    eventList[index] = { ...eventList[index], ...updatedFields };
-  }
+// Update an existing event in Firestore
+export const updateEvent = async (id: string, eventData: Omit<Event, 'id' | 'image'>): Promise<void> => {
+  await FirestoreService.updateEventInCollection(id, eventData, 'Events', 'GlobalEvents', 'Data');
 };
 
-export const deleteEvent = (id: string): void => {
-  eventList = eventList.filter(event => event.id !== id);
+// Delete an event from Firestore
+export const deleteEvent = async (id: string): Promise<void> => {
+  await FirestoreService.deleteEventFromCollection(id, 'Events', 'GlobalEvents', 'Data');
 };
+
 
