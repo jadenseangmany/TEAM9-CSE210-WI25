@@ -1,5 +1,5 @@
 // PostEventScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { addEvent } from '../../../Services/EventService';
@@ -7,9 +7,11 @@ import styles from './styles';
 import FirestoreService from '../../../Services/FirestoreService';
 import { Timestamp } from '@react-native-firebase/firestore/lib/modular/Timestamp';
 import { EventData } from '../../../Components/Types/Interfaces';
+import { AppContext } from '../../../Context/AppContext';
 
 const PostEventScreen = () => {
   const navigation = useNavigation();
+  const ctx = useContext(AppContext);
 
   // State for input fields
   const [title, setTitle] = useState('');
@@ -20,8 +22,6 @@ const PostEventScreen = () => {
   const [type, setType] = useState('');
 
   const handlePostEvent = () => {
-    console.log("--------------------------------------------------");
-    console.log("handlePostEvent");
     // Convert attendees to a number
     const numAttendees = parseInt(attendees, 10) || 0;
 
@@ -34,16 +34,19 @@ const PostEventScreen = () => {
       category,
       type,
     });
+
+    // add event to personal calendar
     const newEvent: EventData = {
       id: '', // Provide a default id or generate a new one
       EventName: title,
       EventDescription: 'description',
-      // StartTime: FirestoreService.createTimestampFromTimeString(eventStartTime, selectedDate),
-      // EndTime: FirestoreService.createTimestampFromTimeString(eventEndTime, selectedDate),
-      StartTime: Timestamp.fromDate(new Date()), // current time for testing
-      EndTime: Timestamp.fromDate(new Date(new Date().getTime() + 60 * 60 * 1000)), // current time + 1h for testing
+      StartTime: time,
+      EndTime: time,
     };
-    FirestoreService.addEventToCollection(newEvent, );
+    // TODO: Check user logged in or not
+    const email = ctx.user?.email || 'useremail@ucsd.edu';
+    FirestoreService.addEventToCollection(newEvent, 'Events', 'PersonalEvents', email, date, 'DailyAgenda');
+
     // Navigate back to the EventsList screen
     navigation.goBack();
   };

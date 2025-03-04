@@ -68,6 +68,11 @@ const FirestoreService = {
   addEventToCollection: async (eventData: EventData, ...paths: string[]) => {
     console.log("--------------------------------------------------");
     console.log("TEST: Adding event with data:", eventData);
+    // console.log("TEST: Paths:");
+    // console.log("--------------------------------------------------");
+    // paths.forEach(p => console.log(p));
+    // // console.log(paths[2]);
+    // console.log("--------------------------------------------------");
     try {
       const ref = collection(db, paths.join('/'));
       console.log("TEST: ref", ref);
