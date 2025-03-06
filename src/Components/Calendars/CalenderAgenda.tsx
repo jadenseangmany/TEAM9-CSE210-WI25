@@ -244,8 +244,8 @@ handleSaveEvent = async (
         <View style={styles.itemContainer}>
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <Text>{item.EventName}</Text>
-            <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
-            <Text>End:   {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
+            <Text>Start: {item.StartTime} {item.StartTime}</Text>
+            <Text>End:   {item.EndTime} {item.EndTime}</Text>
           </View>
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <TouchableOpacity 

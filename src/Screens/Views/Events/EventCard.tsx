@@ -14,11 +14,15 @@ const EventCard: React.FC<EventCardProps> = ({ event, onPress }) => (
     <Image source={{ uri: event.image }} style={styles.eventImage} />
     <View style={styles.eventInfo}>
       <Text style={styles.eventTitle}>{event.title}</Text>
-      <Text style={styles.eventDateTime}>When: {event.when}</Text>
+      <Text style={styles.eventDateTime}>
+        Date: {event.date}{"\n"}
+        Start: {event.startTime} | End: {event.endTime}
+      </Text>
       <Text style={styles.eventLocation}>Location: {event.location}</Text>
     </View>
   </TouchableOpacity>
 );
 
 export default EventCard;
+
 
