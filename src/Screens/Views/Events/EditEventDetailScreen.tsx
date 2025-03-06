@@ -1,7 +1,8 @@
 // src/Screens/Views/Events/EditEventDetailScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import FirestoreService from '../../../Services/FirestoreService';
 import { updateEvent, deleteEvent } from '../../../Services/EventService';
@@ -14,14 +15,36 @@ const EditEventDetailScreen = () => {
   const route = useRoute<EditEventDetailRouteProp>();
   const { eventId } = route.params;
 
-  // Local state for event fields
+  // Local state for event fields (new fields)
   const [title, setTitle] = useState('');
-  const [when, setWhen] = useState('');
+  const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
+  const [startTime, setStartTime] = useState('');  // Format: "XX:XX AM/PM"
+  const [endTime, setEndTime] = useState('');      // Format: "XX:XX AM/PM"
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
   const [club, setClub] = useState('');
+
+  // Category dropdown state
   const [category, setCategory] = useState('');
+  const [openCategory, setOpenCategory] = useState(false);
+  const categoryItems = [
+    { label: 'Entertainment', value: 'Entertainment' },
+    { label: 'Academic', value: 'Academic' },
+    { label: 'Sports', value: 'Sports' },
+    { label: 'Social', value: 'Social' },
+    { label: 'Conference', value: 'Conference' },
+    { label: 'Workshop', value: 'Workshop' },
+  ];
+
+  // Type dropdown state
   const [type, setType] = useState('');
+  const [openType, setOpenType] = useState(false);
+  const typeItems = [
+    { label: 'Online', value: 'Online' },
+    { label: 'Outdoor', value: 'Outdoor' },
+    { label: 'Indoor', value: 'Indoor' },
+  ];
+
   const [details, setDetails] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +55,9 @@ const EditEventDetailScreen = () => {
         const fetchedEvent = await FirestoreService.getEventById('Events', 'GlobalEvents', 'Data', eventId);
         if (fetchedEvent) {
           setTitle(fetchedEvent.title);
-          setWhen(fetchedEvent.when);
+          setDate(fetchedEvent.date);
+          setStartTime(fetchedEvent.startTime);
+          setEndTime(fetchedEvent.endTime);
           setLocation(fetchedEvent.location);
           setUserId(fetchedEvent.userId);
           setClub(fetchedEvent.club);
@@ -61,7 +86,18 @@ const EditEventDetailScreen = () => {
 
   const handleUpdateEvent = async () => {
     try {
-      await updateEvent(eventId, { title, when, location, userId, club, category, type, details });
+      await updateEvent(eventId, {
+        title,
+        date,
+        startTime,
+        endTime,
+        location,
+        userId,
+        club,
+        category,
+        type,
+        details
+      });
       navigation.navigate('EventsList');
     } catch (error) {
       console.error('Error updating event:', error);
@@ -78,7 +114,11 @@ const EditEventDetailScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      nestedScrollEnabled={true}
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <Text style={styles.title}>Edit Event</Text>
       <TextInput
         style={styles.input}
@@ -88,9 +128,21 @@ const EditEventDetailScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="When (YYYY-MM-DDTHH:MM:SS)"
-        value={when}
-        onChangeText={setWhen}
+        placeholder="Date (YYYY-MM-DD)"
+        value={date}
+        onChangeText={setDate}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Start Time (e.g., 08:00 AM)"
+        value={startTime}
+        onChangeText={setStartTime}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="End Time (e.g., 10:00 AM)"
+        value={endTime}
+        onChangeText={setEndTime}
       />
       <TextInput
         style={styles.input}
@@ -110,18 +162,35 @@ const EditEventDetailScreen = () => {
         value={club}
         onChangeText={setClub}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Category"
+
+      {/* Category Dropdown */}
+      <DropDownPicker
+        open={openCategory}
         value={category}
-        onChangeText={setCategory}
-      />
-      <TextInput
+        items={categoryItems}
+        setOpen={setOpenCategory}
+        setValue={setCategory}
+        placeholder="Select Category"
         style={styles.input}
-        placeholder="Type (online/outdoor/indoor)"
-        value={type}
-        onChangeText={setType}
+        listMode="SCROLLVIEW"
+        zIndex={3000}
+        zIndexInverse={1000}
       />
+
+      {/* Type Dropdown */}
+      <DropDownPicker
+        open={openType}
+        value={type}
+        items={typeItems}
+        setOpen={setOpenType}
+        setValue={setType}
+        placeholder="Select Type"
+        style={styles.input}
+        listMode="SCROLLVIEW"
+        zIndex={2000}
+        zIndexInverse={1100}
+      />
+
       <TextInput
         style={styles.input}
         placeholder="Details"
@@ -134,10 +203,11 @@ const EditEventDetailScreen = () => {
       <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDeleteEvent}>
         <Text style={styles.buttonText}>Delete Event</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 export default EditEventDetailScreen;
+
 
 

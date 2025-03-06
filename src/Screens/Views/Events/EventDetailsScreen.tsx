@@ -56,7 +56,10 @@ const EventDetailsScreen = () => {
       <Text style={styles.eventTitle}>{event.title}</Text>
 
       {/* When (Date/Time) */}
-      <Text style={styles.eventDetails}>When: {event.when}</Text>
+      <Text style={styles.eventDetails}>
+        Date: {event.date} {"\n"}
+        Start: {event.startTime} | End: {event.endTime}
+      </Text>
 
       {/* Location */}
       <Text style={styles.eventDetails}>Location: {event.location}</Text>
