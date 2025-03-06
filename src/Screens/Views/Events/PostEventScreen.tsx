@@ -1,43 +1,84 @@
-// PostEventScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addEvent } from '../../../Services/EventService';
+import DropDownPicker from 'react-native-dropdown-picker';
 import styles from './styles';
+import { addEvent, convertTo24HourFormat } from '../../../Services/EventService';
 
 const PostEventScreen = () => {
   const navigation = useNavigation();
 
-  // State for input fields
+  // State for event attributes
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [attendees, setAttendees] = useState('');
+  const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
+  const [startTime, setStartTime] = useState('');  // Format: "HH:MM AM/PM"
+  const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
+  const [location, setLocation] = useState('');
+  const [userId, setUserId] = useState('');
+  const [club, setClub] = useState('');
+  const [details, setDetails] = useState('');
+
+  // State for Category dropdown
   const [category, setCategory] = useState('');
+  const [openCategory, setOpenCategory] = useState(false);
+  const categoryItems = [
+    { label: 'Entertainment', value: 'Entertainment' },
+    { label: 'Academic', value: 'Academic' },
+    { label: 'Sports', value: 'Sports' },
+    { label: 'Social', value: 'Social' },
+    { label: 'Conference', value: 'Conference' },
+    { label: 'Workshop', value: 'Workshop' },
+  ];
+
+  // State for Type dropdown
   const [type, setType] = useState('');
+  const [openType, setOpenType] = useState(false);
+  const typeItems = [
+    { label: 'Online', value: 'Online' },
+    { label: 'Outdoor', value: 'Outdoor' },
+    { label: 'Indoor', value: 'Indoor' },
+  ];
 
-  const handlePostEvent = () => {
-    // Convert attendees to a number
-    const numAttendees = parseInt(attendees, 10) || 0;
+  const handlePostEvent = async () => {
+    try {
+      // Convert startTime and endTime from AM/PM to 24-hour format strings.
+      const start24 = convertTo24HourFormat(startTime); // e.g. "08:00 AM" -> "08:00"
+      const end24 = convertTo24HourFormat(endTime);       // e.g. "10:00 AM" -> "10:00"
 
-    // Add the new event to the event list
-    addEvent({
-      title,
-      date,
-      time,
-      attendees: numAttendees,
-      category,
-      type,
-    });
+      // Build ISO date-time strings
+      const startDateTimeString = `${date}T${start24}:00`; // e.g., "2025-02-16T08:00:00"
+      const endDateTimeString = `${date}T${end24}:00`;       // e.g., "2025-02-16T10:00:00"
 
-    // Navigate back to the EventsList screen
-    navigation.goBack();
+      // Convert to numeric timestamps
+      const startTimeStamp = new Date(startDateTimeString).getTime();
+      const endTimeStamp = new Date(endDateTimeString).getTime();
+
+      // Call addEvent with the new fields (using eventName instead of title)
+      await addEvent({
+        eventName: title,
+        date,
+        startTimeStamp,
+        endTimeStamp,
+        location,
+        userId,
+        club,
+        category,
+        type,
+        details,
+      });
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error posting event:', error);
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      nestedScrollEnabled={true}
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <Text style={styles.title}>Post Event</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Title"
@@ -52,35 +93,74 @@ const PostEventScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Time (e.g., 8:00 PM)"
-        value={time}
-        onChangeText={setTime}
+        placeholder="Start Time (e.g., 08:00 AM)"
+        value={startTime}
+        onChangeText={setStartTime}
       />
       <TextInput
         style={styles.input}
-        placeholder="Attendees"
-        value={attendees}
-        onChangeText={setAttendees}
-        keyboardType="numeric"
+        placeholder="End Time (e.g., 10:00 AM)"
+        value={endTime}
+        onChangeText={setEndTime}
       />
       <TextInput
         style={styles.input}
-        placeholder="Category"
+        placeholder="Location"
+        value={location}
+        onChangeText={setLocation}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="User ID"
+        value={userId}
+        onChangeText={setUserId}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Club"
+        value={club}
+        onChangeText={setClub}
+      />
+      <DropDownPicker
+        open={openCategory}
         value={category}
-        onChangeText={setCategory}
+        items={categoryItems}
+        setOpen={setOpenCategory}
+        setValue={setCategory}
+        placeholder="Select Category"
+        style={styles.input}
+        listMode="SCROLLVIEW"
+        zIndex={3000}
+        zIndexInverse={1000}
+      />
+      <DropDownPicker
+        open={openType}
+        value={type}
+        items={typeItems}
+        setOpen={setOpenType}
+        setValue={setType}
+        placeholder="Select Type"
+        style={styles.input}
+        listMode="SCROLLVIEW"
+        zIndex={2000}
+        zIndexInverse={1100}
       />
       <TextInput
         style={styles.input}
-        placeholder="Type"
-        value={type}
-        onChangeText={setType}
+        placeholder="Details"
+        value={details}
+        onChangeText={setDetails}
       />
-
       <TouchableOpacity style={styles.button} onPress={handlePostEvent}>
         <Text style={styles.buttonText}>Submit Event</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 export default PostEventScreen;
+
+
+
+
+

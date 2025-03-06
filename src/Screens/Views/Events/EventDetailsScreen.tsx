@@ -1,22 +1,44 @@
-// EventDetailsScreen.tsx
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// src/Screens/Views/Events/EventDetailsScreen.tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Image } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
-import { eventList } from '../../../Services/EventService';
+import FirestoreService from '../../../Services/FirestoreService';
 import styles from './styles';
+
+type EventDetailsRouteProp = RouteProp<EventStackParamList, 'EventDetails'>;
 
 const EventDetailsScreen = () => {
   const navigation = useNavigation();
-  // Extract the eventId parameter from the route
-  const route = useRoute<RouteProp<EventStackParamList, 'EventDetails'>>();
+  const route = useRoute<EventDetailsRouteProp>();
   const { eventId } = route.params;
 
-  // Find the event by its ID
-  const event = eventList.find(e => e.id === eventId);
+  const [event, setEvent] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // If no event is found, display an error message
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        // Build the path "Events/GlobalEvents/Data/{eventId}"
+        const fetchedEvent = await FirestoreService.getEventById('Events', 'GlobalEvents', 'Data', eventId);
+        setEvent(fetchedEvent);
+      } catch (error) {
+        console.error('Error fetching event:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvent();
+  }, [eventId]);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading event...</Text>
+      </View>
+    );
+  }
+
   if (!event) {
     return (
       <View style={styles.container}>
@@ -31,26 +53,32 @@ const EventDetailsScreen = () => {
       <Image source={{ uri: event.image }} style={styles.eventImage} />
 
       {/* Event Title */}
-      <Text style={styles.eventTitle}>{event.title}</Text>
+      <Text style={styles.eventTitle}>{event.eventName}</Text>
 
-      {/* Event Date and Time */}
+      {/* Date and Time */}
       <Text style={styles.eventDetails}>
-        {event.date} at {event.time}
+        Date: {event.date}{"\n"}
+        Start: {new Date(event.startTimeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} | End: {new Date(event.endTimeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
       </Text>
 
-      {/* Attendee Count */}
-      <Text style={styles.eventDetails}>{event.attendees} attending</Text>
+      {/* Location */}
+      <Text style={styles.eventDetails}>Location: {event.location}</Text>
+
+      {/* Club */}
+      <Text style={styles.eventDetails}>Club: {event.club}</Text>
 
       {/* Category and Type */}
       <Text style={styles.eventDetails}>Category: {event.category}</Text>
       <Text style={styles.eventDetails}>Type: {event.type}</Text>
 
       {/* Additional Description */}
-      <Text style={styles.eventDescription}>
-        Join us for an exciting event: {event.title}. This event promises engaging sessions and networking opportunities. Don't miss out!
-      </Text>
+      <Text style={styles.eventDescription}>{event.details}</Text>
     </ScrollView>
   );
 };
 
 export default EventDetailsScreen;
+
+
+
+
