@@ -19,7 +19,7 @@ const EventDetailsScreen = () => {
   useEffect(() => {
     const loadEvent = async () => {
       try {
-        // Note: This call builds the path "Events/GlobalEvents/Data/{eventId}"
+        // Build the path "Events/GlobalEvents/Data/{eventId}"
         const fetchedEvent = await FirestoreService.getEventById('Events', 'GlobalEvents', 'Data', eventId);
         setEvent(fetchedEvent);
       } catch (error) {
@@ -53,12 +53,12 @@ const EventDetailsScreen = () => {
       <Image source={{ uri: event.image }} style={styles.eventImage} />
 
       {/* Event Title */}
-      <Text style={styles.eventTitle}>{event.title}</Text>
+      <Text style={styles.eventTitle}>{event.eventName}</Text>
 
-      {/* When (Date/Time) */}
+      {/* Date and Time */}
       <Text style={styles.eventDetails}>
-        Date: {event.date} {"\n"}
-        Start: {event.startTime} | End: {event.endTime}
+        Date: {event.date}{"\n"}
+        Start: {new Date(event.startTimeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} | End: {new Date(event.endTimeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
       </Text>
 
       {/* Location */}
@@ -71,12 +71,14 @@ const EventDetailsScreen = () => {
       <Text style={styles.eventDetails}>Category: {event.category}</Text>
       <Text style={styles.eventDetails}>Type: {event.type}</Text>
 
-      {/* Additional Description / Details */}
+      {/* Additional Description */}
       <Text style={styles.eventDescription}>{event.details}</Text>
     </ScrollView>
   );
 };
 
 export default EventDetailsScreen;
+
+
 
 

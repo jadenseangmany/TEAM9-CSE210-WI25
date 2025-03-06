@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import styles from './styles';
-import { addEvent } from '../../../Services/EventService';
+import { addEvent, convertTo24HourFormat } from '../../../Services/EventService';
 
 const PostEventScreen = () => {
   const navigation = useNavigation();
@@ -11,8 +11,8 @@ const PostEventScreen = () => {
   // State for event attributes
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
-  const [startTime, setStartTime] = useState('');  // Format: "XX:XX AM/PM"
-  const [endTime, setEndTime] = useState('');      // Format: "XX:XX AM/PM"
+  const [startTime, setStartTime] = useState('');  // Format: "HH:MM AM/PM"
+  const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
   const [club, setClub] = useState('');
@@ -41,11 +41,24 @@ const PostEventScreen = () => {
 
   const handlePostEvent = async () => {
     try {
+      // Convert startTime and endTime from AM/PM to 24-hour format strings.
+      const start24 = convertTo24HourFormat(startTime); // e.g. "08:00 AM" -> "08:00"
+      const end24 = convertTo24HourFormat(endTime);       // e.g. "10:00 AM" -> "10:00"
+
+      // Build ISO date-time strings
+      const startDateTimeString = `${date}T${start24}:00`; // e.g., "2025-02-16T08:00:00"
+      const endDateTimeString = `${date}T${end24}:00`;       // e.g., "2025-02-16T10:00:00"
+
+      // Convert to numeric timestamps
+      const startTimeStamp = new Date(startDateTimeString).getTime();
+      const endTimeStamp = new Date(endDateTimeString).getTime();
+
+      // Call addEvent with the new fields (using eventName instead of title)
       await addEvent({
-        title,
+        eventName: title,
         date,
-        startTime,
-        endTime,
+        startTimeStamp,
+        endTimeStamp,
         location,
         userId,
         club,
@@ -108,8 +121,6 @@ const PostEventScreen = () => {
         value={club}
         onChangeText={setClub}
       />
-
-      {/* Category Dropdown */}
       <DropDownPicker
         open={openCategory}
         value={category}
@@ -118,12 +129,10 @@ const PostEventScreen = () => {
         setValue={setCategory}
         placeholder="Select Category"
         style={styles.input}
-        listMode="SCROLLVIEW"  // Use SCROLLVIEW mode instead of VirtualizedList
+        listMode="SCROLLVIEW"
         zIndex={3000}
         zIndexInverse={1000}
       />
-
-      {/* Type Dropdown */}
       <DropDownPicker
         open={openType}
         value={type}
@@ -136,7 +145,6 @@ const PostEventScreen = () => {
         zIndex={2000}
         zIndexInverse={1100}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Details"
@@ -151,6 +159,7 @@ const PostEventScreen = () => {
 };
 
 export default PostEventScreen;
+
 
 
 

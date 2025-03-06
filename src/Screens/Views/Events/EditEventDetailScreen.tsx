@@ -15,11 +15,11 @@ const EditEventDetailScreen = () => {
   const route = useRoute<EditEventDetailRouteProp>();
   const { eventId } = route.params;
 
-  // Local state for event fields (new fields)
-  const [title, setTitle] = useState('');
+  // Local state for event fields (using the new interface)
+  const [eventName, setEventName] = useState('');
   const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
-  const [startTime, setStartTime] = useState('');  // Format: "XX:XX AM/PM"
-  const [endTime, setEndTime] = useState('');      // Format: "XX:XX AM/PM"
+  const [startTime, setStartTime] = useState('');  // Format: "HH:MM AM/PM"
+  const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
   const [club, setClub] = useState('');
@@ -48,16 +48,23 @@ const EditEventDetailScreen = () => {
   const [details, setDetails] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Helper function: convert numeric timestamp to AM/PM string.
+  const convertTimestampTo12Hour = (timestamp: number): string => {
+    const dateObj = new Date(timestamp);
+    return dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
   useEffect(() => {
     const loadEvent = async () => {
       try {
         // Build the path "Events/GlobalEvents/Data/{eventId}"
         const fetchedEvent = await FirestoreService.getEventById('Events', 'GlobalEvents', 'Data', eventId);
         if (fetchedEvent) {
-          setTitle(fetchedEvent.title);
+          setEventName(fetchedEvent.eventName);
           setDate(fetchedEvent.date);
-          setStartTime(fetchedEvent.startTime);
-          setEndTime(fetchedEvent.endTime);
+          // Convert numeric timestamps to AM/PM strings.
+          setStartTime(convertTimestampTo12Hour(fetchedEvent.startTimeStamp));
+          setEndTime(convertTimestampTo12Hour(fetchedEvent.endTimeStamp));
           setLocation(fetchedEvent.location);
           setUserId(fetchedEvent.userId);
           setClub(fetchedEvent.club);
@@ -86,11 +93,15 @@ const EditEventDetailScreen = () => {
 
   const handleUpdateEvent = async () => {
     try {
+      // Convert the AM/PM strings back into numeric timestamps.
+      // We convert the times by combining them with the date and parsing.
+      const newStartTimeStamp = new Date(`${date} ${startTime}`).getTime();
+      const newEndTimeStamp = new Date(`${date} ${endTime}`).getTime();
       await updateEvent(eventId, {
-        title,
+        eventName,
         date,
-        startTime,
-        endTime,
+        startTimeStamp: newStartTimeStamp,
+        endTimeStamp: newEndTimeStamp,
         location,
         userId,
         club,
@@ -122,9 +133,9 @@ const EditEventDetailScreen = () => {
       <Text style={styles.title}>Edit Event</Text>
       <TextInput
         style={styles.input}
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
+        placeholder="Event Name"
+        value={eventName}
+        onChangeText={setEventName}
       />
       <TextInput
         style={styles.input}
@@ -208,6 +219,8 @@ const EditEventDetailScreen = () => {
 };
 
 export default EditEventDetailScreen;
+
+
 
 
 
