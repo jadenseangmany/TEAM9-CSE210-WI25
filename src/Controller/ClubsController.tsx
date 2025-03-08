@@ -1,7 +1,7 @@
-import React from "react";
-import FirestoreService from "../Services/FirestoreService";
 
-export const ClubsController = () => {
-    // search bar to search for clubs
 
-};
+export const searchClubs = (clubList: any, search: string) => {
+    return clubList._j.filter((club:any) => {
+        return club.Name.toLowerCase().includes(search.toLowerCase());
+    });
+}
