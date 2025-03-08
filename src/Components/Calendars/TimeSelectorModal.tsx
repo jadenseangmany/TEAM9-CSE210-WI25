@@ -12,12 +12,12 @@ interface TimeSelectorModalProps {
 }
 
 const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, closeModal, handleSaveEvent, event, date }) => {
-  const [eventName, setEventName] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
+  const [eventName, setEventName] = useState<string>('');
+  const [eventDescription, setEventDescription] = useState<string>('');
   const [startTime, setStartTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
   const [endTime, setEndTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
-  const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showEndPicker, setShowEndPicker] = useState(false);
+  const [showStartPicker, setShowStartPicker] = useState<boolean>(false);
+  const [showEndPicker, setShowEndPicker] = useState<boolean>(false);
 
   // Initialize with event data or default to 00:00
   useEffect(() => {
@@ -31,6 +31,8 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
       setStartTime({ hour: start.getHours(), minute: start.getMinutes() });
       setEndTime({ hour: end.getHours(), minute: end.getMinutes() });
     } else {
+      setEventName('');
+      setEventDescription('');
       setStartTime({ hour: 0, minute: 0 });
       setEndTime({ hour: 0, minute: 0 });
     }
