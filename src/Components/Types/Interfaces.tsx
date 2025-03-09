@@ -13,6 +13,14 @@ export interface Event {
   details: string;
 }
 
+export interface CalenderEventData {
+  id: string;
+  EventName: string;
+  EventDescription: string;
+  StartTime: any; 
+  EndTime: any;
+  location?: string;
+}
 
 export interface CalendarModuleProps {
   schedules: {

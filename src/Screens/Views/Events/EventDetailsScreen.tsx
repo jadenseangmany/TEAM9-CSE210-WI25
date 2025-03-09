@@ -1,10 +1,12 @@
 // src/Screens/Views/Events/EventDetailsScreen.tsx
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import FirestoreService from '../../../Services/FirestoreService';
 import styles from './styles';
+import { AddEventToPersonalCalendar } from '../../../Controller/ScheduleController';
+import { AppContext } from '../../../Context/AppContext';
 
 type EventDetailsRouteProp = RouteProp<EventStackParamList, 'EventDetails'>;
 
@@ -14,7 +16,9 @@ const EventDetailsScreen = () => {
   const { eventId } = route.params;
 
   const [event, setEvent] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isAttending, setIsAttending] = useState<boolean>(false);
+  const { user } = useContext(AppContext);
 
   useEffect(() => {
     const loadEvent = async () => {
@@ -47,6 +51,24 @@ const EventDetailsScreen = () => {
     );
   }
 
+  const handleAttendPress = () => {
+    setIsAttending(!isAttending);
+    try {
+      if (isAttending) {
+        console.log('Add event to personal calendar');
+        // FirestoreService.updateDocField('attendees', event.attendees + 1, 'Events', 'GlobalEvents', 'Data', eventId);
+        AddEventToPersonalCalendar(event, user, false);
+      } 
+      else {
+        // FirestoreService.updateDocField('attendees', event.attendees - 1, 'Events', 'GlobalEvents', 'Data', eventId);
+        console.log('Removing event from personal calendar');
+      }
+    }
+    catch (error) {
+      console.error('Error updating event:', error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       {/* Event Image */}
@@ -73,6 +95,9 @@ const EventDetailsScreen = () => {
 
       {/* Additional Description */}
       <Text style={styles.eventDescription}>{event.details}</Text>
+      <TouchableOpacity style={styles.attendBtn} onPress={() => handleAttendPress()}>
+        <Text style={styles.buttonText}>{isAttending? 'Cancel': 'Attend'}</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

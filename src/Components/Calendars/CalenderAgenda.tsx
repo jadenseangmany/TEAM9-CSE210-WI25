@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Alert, StyleSheet, Text, View, TouchableOpacity, SafeAreaView, RefreshControl} from 'react-native';
 import { Agenda, DateData, AgendaEntry, AgendaSchedule } from 'react-native-calendars';
 import FirestoreService from '../../Services/FirestoreService';
-import { EventData } from '../Types/Interfaces';
+import { CalenderEventData } from '../Types/Interfaces';
 import TimeSelectorModal from './TimeSelectorModal';
 import { Timestamp } from 'firebase/firestore';
 
@@ -20,7 +20,7 @@ interface AgendaState {
   eventDescription: string;
   eventStartTime: string;
   eventEndTime: string;
-  eventToEdit: EventData | null;
+  eventToEdit: CalenderEventData | null;
   isRefreshing: boolean;
 }
 
@@ -117,7 +117,7 @@ export default class CalenderAgenda extends React.PureComponent<Props, AgendaSta
   };
 
 
-  openEditModal = (event: EventData) => {
+  openEditModal = (event: CalenderEventData) => {
     if (!this.state.selectedDate) {
         Alert.alert('Please select a date');
         return;
@@ -148,8 +148,8 @@ handleSaveEvent = async (
         Alert.alert('All fields are required');
         return;
     }
-    console.log("time", new Date(eventStartTime));
-    const newEvent: EventData = {
+    console.log("time", eventStartTime);
+    const newEvent: CalenderEventData = {
         id: eventToEdit ? eventToEdit.id : '', // Provide a default id or generate a new one
         EventName: eventName,
         EventDescription: eventDescription,
@@ -221,7 +221,7 @@ handleSaveEvent = async (
         this.handleDateSelect(this.state.selectedDate);
     }, 5000);
   };
-  deleteEvent = async (event: EventData) => {
+  deleteEvent = async (event: CalenderEventData) => {
     const { selectedDate } = this.state;
     try {
       await FirestoreService.deleteEventFromCollection(
@@ -238,14 +238,14 @@ handleSaveEvent = async (
     }
   }
 
-  renderItem = (item: EventData) => {
+  renderItem = (item: CalenderEventData) => {
     return (
       <TouchableOpacity onPress={() => Alert.alert(item.EventName, item.EventDescription)}>
         <View style={styles.itemContainer}>
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <Text>{item.EventName}</Text>
-            <Text>Start: {item.StartTime} {item.StartTime}</Text>
-            <Text>End:   {item.EndTime} {item.EndTime}</Text>
+            <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
+            <Text>End:   {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
           </View>
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <TouchableOpacity 

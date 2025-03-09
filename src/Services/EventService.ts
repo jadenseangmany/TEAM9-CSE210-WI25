@@ -4,7 +4,7 @@ import { Event } from '../Components/Types/Interfaces';
 // Fetch all events from Firestore
 export const fetchEvents = async (): Promise<Event[]> => {
   // Adjust the collection path as needed (here we assume 'Events/GlobalEvents/Data')
-  const events = await FirestoreService.getEventsFromCollection('Events', 'GlobalEvents', 'Data');
+  const events = await FirestoreService.getDataFromCollection('Events', 'GlobalEvents', 'Data');
   return events;
 };
 

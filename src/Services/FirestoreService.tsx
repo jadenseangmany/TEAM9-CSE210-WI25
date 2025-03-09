@@ -1,9 +1,10 @@
 import { deleteDoc, collection, doc, getDocs, getDoc, setDoc, addDoc, Timestamp, writeBatch } from 'firebase/firestore';
-import { EventData } from '../Components/Types/Interfaces';
+import { CalenderEventData } from '../Components/Types/Interfaces';
 import { db, auth } from '../Configurations/FirebaseConfig';
 import { AppContext } from '../Context/AppContext';
 import { useContext } from 'react';
 import { AgendaSchedule } from 'react-native-calendars';
+import { Event } from '../Components/Types/Interfaces';
 
 const FirestoreService = {
   getEventsFromCollection: async (...paths: string[]) => {
@@ -21,7 +22,7 @@ const FirestoreService = {
       return snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as EventData[];
+      })) as CalenderEventData[];
     } catch (error) {
       console.error('Error fetching documents:', error);
       return [];
@@ -40,7 +41,7 @@ const FirestoreService = {
         return {
           id: docSnap.id,
           ...docSnap.data()
-        } as EventData;
+        } as CalenderEventData;
       } else {
         // If the document doesn't exist, return null
         console.log("No such document!");
@@ -65,7 +66,7 @@ const FirestoreService = {
     }
   },
   // Function to add a new event to Firestore
-  addEventToCollection: async (eventData: EventData, ...paths: string[]) => {
+  addEventToCollection: async (eventData: CalenderEventData | Event, ...paths: string[]) => {
     try {
       const ref = collection(db, paths.join('/'));
       // Add a new document with auto-generated ID
@@ -81,7 +82,7 @@ const FirestoreService = {
   },
 
   // Function to update an existing event in Firestore
-  updateEventInCollection: async (eventId: string, eventData: EventData, ...paths: string[]) => {
+  updateEventInCollection: async (eventId: string, eventData: CalenderEventData | Event | Omit<Event, 'id' | 'image'>, ...paths: string[]) => {
     try {
       const docRef = doc(db, paths.join('/'), eventId);
       // Update the document with the new data
@@ -213,6 +214,27 @@ const FirestoreService = {
       console.error('Error fetching club info:', error);
       return { error: 'Fail to get club info!' };
   }
+  },
+  getDataFromCollection: async (...paths: string[]) => {
+    try {
+      // Dynamically create the reference by joining the paths
+      const ref = collection(db, paths.join('/'));
+      const snapshot = await getDocs(ref);
+
+      if (snapshot.empty) {
+        console.log('No documents found');
+        return [];
+      }
+
+      // Map documents to an array of data
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Event[];
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      return [];
+    }
   },
 };
 

@@ -82,42 +82,49 @@ const PostEventScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Title"
+        placeholderTextColor={'grey'}
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
         style={styles.input}
         placeholder="Date (YYYY-MM-DD)"
+        placeholderTextColor={'grey'}
         value={date}
         onChangeText={setDate}
       />
       <TextInput
         style={styles.input}
         placeholder="Start Time (e.g., 08:00 AM)"
+        placeholderTextColor={'grey'}
         value={startTime}
         onChangeText={setStartTime}
       />
       <TextInput
         style={styles.input}
         placeholder="End Time (e.g., 10:00 AM)"
+        placeholderTextColor={'grey'}
         value={endTime}
         onChangeText={setEndTime}
       />
       <TextInput
         style={styles.input}
         placeholder="Location"
+        placeholderTextColor={'grey'}
         value={location}
         onChangeText={setLocation}
       />
       <TextInput
         style={styles.input}
         placeholder="User ID"
+        placeholderTextColor={'grey'}
         value={userId}
         onChangeText={setUserId}
       />
       <TextInput
         style={styles.input}
         placeholder="Club"
+        placeholderTextColor={'grey'}
         value={club}
         onChangeText={setClub}
       />
@@ -148,6 +155,7 @@ const PostEventScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Details"
+        placeholderTextColor={'grey'}
         value={details}
         onChangeText={setDetails}
       />

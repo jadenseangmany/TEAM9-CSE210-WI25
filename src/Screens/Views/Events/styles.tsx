@@ -124,6 +124,19 @@ const styles = StyleSheet.create({
   eventDescription: {
     marginBottom: 16,
   },
+  eventLocation: {
+    marginBottom: 16,
+  },
+  attendBtn: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
+    margin: 16,
+    width: '30%',
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center', 
+  },
 });
 
 export default styles;

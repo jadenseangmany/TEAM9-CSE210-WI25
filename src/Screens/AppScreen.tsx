@@ -28,8 +28,8 @@ const AppScreen = () => {
             clientId="6bZf97q4yMUYoFLV92YlR919TSJRwbbC"
         >
             <NavigationContainer>
-            <LoginScreen />
-            <AppNavigator />
+              <LoginScreen />
+              <AppNavigator />
             </NavigationContainer>
         </Auth0Provider>
         </AppContext.Provider>

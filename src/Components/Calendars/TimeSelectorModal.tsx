@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, Button, StyleSheet, TextInput } from 'react-native';
-import { TimerPickerModal } from 'react-native-timer-picker'; // Import TimerPickerModal
-import { EventData } from '../Types/Interfaces';
+import Slider from '@react-native-community/slider'; // Make sure to import correctly
+import { CalenderEventData } from '../Types/Interfaces';
 
 interface TimeSelectorModalProps {
   isModalVisible: boolean;
   closeModal: () => void;
   handleSaveEvent: (eventName: string, eventDescription: string, startTime: string, endTime: string) => void;
-  event: EventData | null;
+  event: CalenderEventData | null;
   date: string; // Date in YYYY-MM-DD format
 }
 
