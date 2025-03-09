@@ -137,6 +137,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center', 
   },
+  disabledBtn: {
+    backgroundColor: 'gray',
+    padding: 16,
+    borderRadius: 8,
+    margin: 16,
+    width: '30%',
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center', 
+    opacity: 0.5,
+  },
 });
 
 export default styles;

@@ -6,8 +6,8 @@ export const EventToCalenderEventDataConverter = (event: Event): CalenderEventDa
     id: event.id,
     EventName: event.eventName,
     EventDescription: event.details,
-    StartTime: FirestoreService.createTimestampFromTimeString(new Date(event.startTimeStamp).toLocaleTimeString(), event.date),
-    EndTime: FirestoreService.createTimestampFromTimeString(new Date(event.endTimeStamp).toLocaleTimeString(), event.date),
+    StartTime: FirestoreService.createTimestampFromTimeString(event.startTimeStamp, event.date),
+    EndTime: FirestoreService.createTimestampFromTimeString(event.endTimeStamp, event.date),
     location: event.location,
   };
 }
@@ -45,4 +45,15 @@ export const AddEventToPersonalCalendar = async (event: Event, user: any, eventT
                 'DailyAgenda'
             );
     }
+}
+
+export const RemoveEventFromPersonalCalendar = async (event: Event, user: any) => {
+    await FirestoreService.deleteEventFromCollection(
+        event.id, 
+        'Events', 
+        'PersonalEvents', 
+        user?.email || "useremail@ucsd.edu",
+        event.date,
+        'DailyAgenda'
+    );
 }

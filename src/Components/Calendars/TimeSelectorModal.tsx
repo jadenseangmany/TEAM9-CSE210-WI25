@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, Button, StyleSheet, TextInput } from 'react-native';
-import Slider from '@react-native-community/slider'; // Make sure to import correctly
 import { CalenderEventData } from '../Types/Interfaces';
+import TimeSelector from './TimeSelector';
 
 interface TimeSelectorModalProps {
   isModalVisible: boolean;
@@ -71,47 +71,7 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
           style={styles.input}
         />
 
-        {/* Start Time */}
-        <View style={styles.timeSection}>
-          <Text style={styles.label}>Start Time: {formatTime(startTime)}</Text>
-          <Button title="Select" onPress={() => setShowStartPicker(true)} />
-        </View>
-        <TimerPickerModal
-          visible={showStartPicker}
-          setIsVisible={setShowStartPicker}
-          onConfirm={(pickedDuration) => {
-            setStartTime({ hour: pickedDuration.hours, minute: pickedDuration.minutes });
-            setShowStartPicker(false);
-          }}
-          initialValue={{ hours: startTime.hour, minutes: startTime.minute }}
-          modalTitle="Pick Start Time"
-          onCancel={() => setShowStartPicker(false)}
-          hourLabel="h"
-          minuteLabel="m"
-          use12HourPicker={false} // 24-hour format
-          closeOnOverlayPress
-        />
-
-        {/* End Time */}
-        <View style={styles.timeSection}>
-          <Text style={styles.label}>End Time: {formatTime(endTime)}</Text>
-          <Button title="Select" onPress={() => setShowEndPicker(true)} />
-        </View>
-        <TimerPickerModal
-          visible={showEndPicker}
-          setIsVisible={setShowEndPicker}
-          onConfirm={(pickedDuration) => {
-            setEndTime({ hour: pickedDuration.hours, minute: pickedDuration.minutes });
-            setShowEndPicker(false);
-          }}
-          initialValue={{ hours: endTime.hour, minutes: endTime.minute }}
-          modalTitle="Pick End Time"
-          onCancel={() => setShowEndPicker(false)}
-          hourLabel="h"
-          minuteLabel="m"
-          use12HourPicker={false} // 24-hour format
-          closeOnOverlayPress
-        />
+        <TimeSelector startTime={startTime} setStartTime={setStartTime} endTime={endTime} setEndTime={setEndTime} showStartPicker={showStartPicker} setShowStartPicker={setShowStartPicker} showEndPicker={showEndPicker} setShowEndPicker={setShowEndPicker} />
 
         {/* Buttons */}
         <View style={styles.buttonContainer}>
@@ -142,13 +102,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     paddingLeft: 8,
-  },
-  timeSection: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',

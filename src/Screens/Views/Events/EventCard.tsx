@@ -16,7 +16,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onPress }) => (
       <Text style={styles.eventTitle}>{event.eventName}</Text>
       <Text style={styles.eventDateTime}>
         Date: {event.date}{"\n"}
-        Start: {new Date(event.startTimeStamp).toLocaleTimeString()} | End: {new Date(event.endTimeStamp).toLocaleTimeString()}
+        Start: {event.startTimeStamp} | End: {event.endTimeStamp}
       </Text>
       <Text style={styles.eventLocation}>Location: {event.location}</Text>
     </View>

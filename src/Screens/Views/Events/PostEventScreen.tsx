@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import styles from './styles';
 import { addEvent, convertTo24HourFormat } from '../../../Services/EventService';
+import TimeSelector from '../../../Components/Calendars/TimeSelector';
+
 
 const PostEventScreen = () => {
   const navigation = useNavigation();
@@ -11,13 +13,17 @@ const PostEventScreen = () => {
   // State for event attributes
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
-  const [startTime, setStartTime] = useState('');  // Format: "HH:MM AM/PM"
-  const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
+  // const [startTime, setStartTime] = useState('');  // Format: "HH:MM AM/PM"
+  // const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
   const [club, setClub] = useState('');
   const [details, setDetails] = useState('');
-
+  const [startTime, setStartTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
+  const [endTime, setEndTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
+  const [showStartPicker, setShowStartPicker] = useState<boolean>(false);
+  const [showEndPicker, setShowEndPicker] = useState<boolean>(false);
+  
   // State for Category dropdown
   const [category, setCategory] = useState('');
   const [openCategory, setOpenCategory] = useState(false);
@@ -39,19 +45,16 @@ const PostEventScreen = () => {
     { label: 'Indoor', value: 'Indoor' },
   ];
 
+  // Format time to HH:MM string
+  const formatTime = (time: { hour: number; minute: number }): string => {
+    return `${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`;
+  };
+
   const handlePostEvent = async () => {
     try {
       // Convert startTime and endTime from AM/PM to 24-hour format strings.
-      const start24 = convertTo24HourFormat(startTime); // e.g. "08:00 AM" -> "08:00"
-      const end24 = convertTo24HourFormat(endTime);       // e.g. "10:00 AM" -> "10:00"
-
-      // Build ISO date-time strings
-      const startDateTimeString = `${date}T${start24}:00`; // e.g., "2025-02-16T08:00:00"
-      const endDateTimeString = `${date}T${end24}:00`;       // e.g., "2025-02-16T10:00:00"
-
-      // Convert to numeric timestamps
-      const startTimeStamp = new Date(startDateTimeString).getTime();
-      const endTimeStamp = new Date(endDateTimeString).getTime();
+      const startTimeStamp = formatTime(startTime); // e.g. "08:00 AM" -> "08:00"
+      const endTimeStamp = formatTime(endTime);       // e.g. "10:00 AM" -> "10:00"
 
       // Call addEvent with the new fields (using eventName instead of title)
       await addEvent({
@@ -93,20 +96,7 @@ const PostEventScreen = () => {
         value={date}
         onChangeText={setDate}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Start Time (e.g., 08:00 AM)"
-        placeholderTextColor={'grey'}
-        value={startTime}
-        onChangeText={setStartTime}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="End Time (e.g., 10:00 AM)"
-        placeholderTextColor={'grey'}
-        value={endTime}
-        onChangeText={setEndTime}
-      />
+      <TimeSelector startTime={startTime} setStartTime={setStartTime} endTime={endTime} setEndTime={setEndTime} showStartPicker={showStartPicker} setShowStartPicker={setShowStartPicker} showEndPicker={showEndPicker} setShowEndPicker={setShowEndPicker} />
       <TextInput
         style={styles.input}
         placeholder="Location"

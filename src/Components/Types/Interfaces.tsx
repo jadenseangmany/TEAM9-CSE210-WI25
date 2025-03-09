@@ -2,8 +2,8 @@ export interface Event {
   id: string;            // auto-assigned by the db
   eventName: string;     // renamed from "title" for calendar module compatibility
   date: string;          // Format: "YYYY-MM-DD"
-  startTimeStamp: number; // Numeric timestamp (e.g. milliseconds since epoch) for the start time
-  endTimeStamp: number;   // Numeric timestamp for the end time
+  startTimeStamp: string; // HH:MM
+  endTimeStamp: string;   // HH:MM
   location: string;
   userId: string;
   club: string;

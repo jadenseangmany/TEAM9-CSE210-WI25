@@ -41,7 +41,7 @@ const FirestoreService = {
         return {
           id: docSnap.id,
           ...docSnap.data()
-        } as CalenderEventData;
+        } as CalenderEventData | Event;
       } else {
         // If the document doesn't exist, return null
         console.log("No such document!");

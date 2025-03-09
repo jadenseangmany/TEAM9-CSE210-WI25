@@ -246,6 +246,7 @@ handleSaveEvent = async (
             <Text>{item.EventName}</Text>
             <Text>Start: {item.StartTime?.toDate().toLocaleTimeString()} {item.StartTime?.toDate().toLocaleDateString()}</Text>
             <Text>End:   {item.EndTime?.toDate().toLocaleTimeString()} {item.EndTime?.toDate().toLocaleDateString()}</Text>
+            {item.location && <Text>Location: {item.location}</Text>}
           </View>
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <TouchableOpacity 
@@ -320,6 +321,12 @@ handleSaveEvent = async (
         >
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.refreshButton}
+          onPress={() => this.handleDateSelect(selectedDate)}
+        >
+          <Text style={styles.refreshButtonText}>Refresh</Text>
+        </TouchableOpacity>
         
         <TimeSelectorModal 
             isModalVisible={isModalVisible} 
@@ -365,6 +372,21 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: 'white',
     fontSize: 30,
+  },
+  refreshButton: {
+    position: 'absolute',
+    bottom: 30,
+    left: 30,
+    backgroundColor: 'blue',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  refreshButtonText: {
+    color: 'white',
+    fontSize: 15,
   },
   modalContent: {
     flex: 1,

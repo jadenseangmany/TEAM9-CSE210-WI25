@@ -1,11 +1,11 @@
 // src/Screens/Views/Events/EventDetailsScreen.tsx
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import FirestoreService from '../../../Services/FirestoreService';
 import styles from './styles';
-import { AddEventToPersonalCalendar } from '../../../Controller/ScheduleController';
+import { AddEventToPersonalCalendar, RemoveEventFromPersonalCalendar } from '../../../Controller/ScheduleController';
 import { AppContext } from '../../../Context/AppContext';
 
 type EventDetailsRouteProp = RouteProp<EventStackParamList, 'EventDetails'>;
@@ -54,15 +54,9 @@ const EventDetailsScreen = () => {
   const handleAttendPress = () => {
     setIsAttending(!isAttending);
     try {
-      if (isAttending) {
-        console.log('Add event to personal calendar');
-        // FirestoreService.updateDocField('attendees', event.attendees + 1, 'Events', 'GlobalEvents', 'Data', eventId);
-        AddEventToPersonalCalendar(event, user, false);
-      } 
-      else {
-        // FirestoreService.updateDocField('attendees', event.attendees - 1, 'Events', 'GlobalEvents', 'Data', eventId);
-        console.log('Removing event from personal calendar');
-      }
+      console.log('Add event to personal calendar');
+      AddEventToPersonalCalendar(event, user, false);
+      Alert.alert('Event added to your calendar. Try Refresh Your Schedule to see the changes.');
     }
     catch (error) {
       console.error('Error updating event:', error);
@@ -80,7 +74,7 @@ const EventDetailsScreen = () => {
       {/* Date and Time */}
       <Text style={styles.eventDetails}>
         Date: {event.date}{"\n"}
-        Start: {new Date(event.startTimeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} | End: {new Date(event.endTimeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+        Start: {event.startTimeStamp} | End: {event.endTimeStamp}
       </Text>
 
       {/* Location */}
@@ -95,8 +89,8 @@ const EventDetailsScreen = () => {
 
       {/* Additional Description */}
       <Text style={styles.eventDescription}>{event.details}</Text>
-      <TouchableOpacity style={styles.attendBtn} onPress={() => handleAttendPress()}>
-        <Text style={styles.buttonText}>{isAttending? 'Cancel': 'Attend'}</Text>
+      <TouchableOpacity style={!isAttending?styles.attendBtn:styles.disabledBtn} onPress={() => handleAttendPress()} disabled={isAttending}>
+        <Text style={styles.buttonText}>Attend</Text>
       </TouchableOpacity>
     </ScrollView>
   );

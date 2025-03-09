@@ -7,6 +7,8 @@ import { EventStackParamList } from '../../../Navigation/EventsNavigator';
 import FirestoreService from '../../../Services/FirestoreService';
 import { updateEvent, deleteEvent } from '../../../Services/EventService';
 import styles from './styles';
+import TimeSelector from '../../../Components/Calendars/TimeSelector';
+
 
 type EditEventDetailRouteProp = RouteProp<EventStackParamList, 'EditEventDetail'>;
 
@@ -18,11 +20,13 @@ const EditEventDetailScreen = () => {
   // Local state for event fields (using the new interface)
   const [eventName, setEventName] = useState('');
   const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
-  const [startTime, setStartTime] = useState('');  // Format: "HH:MM AM/PM"
-  const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
+  const [startTime, setStartTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
+  const [endTime, setEndTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
   const [club, setClub] = useState('');
+  const [showStartPicker, setShowStartPicker] = useState<boolean>(false);
+  const [showEndPicker, setShowEndPicker] = useState<boolean>(false);
 
   // Category dropdown state
   const [category, setCategory] = useState('');
@@ -59,12 +63,13 @@ const EditEventDetailScreen = () => {
       try {
         // Build the path "Events/GlobalEvents/Data/{eventId}"
         const fetchedEvent = await FirestoreService.getEventById('Events', 'GlobalEvents', 'Data', eventId);
-        if (fetchedEvent) {
+        console.log("fetch event::::::::", fetchedEvent);
+        if (fetchedEvent && 'eventName' in fetchedEvent) {
           setEventName(fetchedEvent.eventName);
           setDate(fetchedEvent.date);
           // Convert numeric timestamps to AM/PM strings.
-          setStartTime(convertTimestampTo12Hour(fetchedEvent.startTimeStamp));
-          setEndTime(convertTimestampTo12Hour(fetchedEvent.endTimeStamp));
+          setStartTime(fetchedEvent.startTimeStamp);
+          setEndTime(fetchedEvent.endTimeStamp);
           setLocation(fetchedEvent.location);
           setUserId(fetchedEvent.userId);
           setClub(fetchedEvent.club);
@@ -143,18 +148,9 @@ const EditEventDetailScreen = () => {
         value={date}
         onChangeText={setDate}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Start Time (e.g., 08:00 AM)"
-        value={startTime}
-        onChangeText={setStartTime}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="End Time (e.g., 10:00 AM)"
-        value={endTime}
-        onChangeText={setEndTime}
-      />
+      <TimeSelector startTime={startTime} setStartTime={setStartTime} endTime={endTime} setEndTime={setEndTime} showStartPicker={showStartPicker} setShowStartPicker={setShowStartPicker} showEndPicker={showEndPicker} setShowEndPicker={setShowEndPicker} />
+
+
       <TextInput
         style={styles.input}
         placeholder="Location"
