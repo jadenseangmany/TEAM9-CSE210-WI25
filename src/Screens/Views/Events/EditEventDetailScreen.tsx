@@ -9,7 +9,6 @@ import { updateEvent, deleteEvent } from '../../../Services/EventService';
 import styles from './styles';
 import TimeSelector from '../../../Components/Calendars/TimeSelector';
 
-
 type EditEventDetailRouteProp = RouteProp<EventStackParamList, 'EditEventDetail'>;
 
 const EditEventDetailScreen = () => {
@@ -20,8 +19,9 @@ const EditEventDetailScreen = () => {
   // Local state for event fields (using the new interface)
   const [eventName, setEventName] = useState('');
   const [date, setDate] = useState('');          // Format: "YYYY-MM-DD"
-  const [startTime, setStartTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
-  const [endTime, setEndTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
+  // Use time scroller state as {hour, minute}
+  const [startTime, setStartTime] = useState({ hour: 0, minute: 0 });
+  const [endTime, setEndTime] = useState({ hour: 0, minute: 0 });
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
   const [club, setClub] = useState('');
@@ -52,10 +52,9 @@ const EditEventDetailScreen = () => {
   const [details, setDetails] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Helper function: convert numeric timestamp to AM/PM string.
-  const convertTimestampTo12Hour = (timestamp: number): string => {
-    const dateObj = new Date(timestamp);
-    return dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  // Helper: format time to HH:MM string
+  const formatTime = (time: { hour: number; minute: number }): string => {
+    return `${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`;
   };
 
   useEffect(() => {
@@ -67,9 +66,37 @@ const EditEventDetailScreen = () => {
         if (fetchedEvent && 'eventName' in fetchedEvent) {
           setEventName(fetchedEvent.eventName);
           setDate(fetchedEvent.date);
-          // Convert numeric timestamps to AM/PM strings.
-          setStartTime(fetchedEvent.startTimeStamp);
-          setEndTime(fetchedEvent.endTimeStamp);
+
+          // Convert startTimeStamp to {hour, minute} regardless of it being a number or a string.
+          if (fetchedEvent.startTimeStamp !== undefined && fetchedEvent.startTimeStamp !== null) {
+            let startTimeStr = '';
+            if (typeof fetchedEvent.startTimeStamp === 'number') {
+              const d = new Date(fetchedEvent.startTimeStamp);
+              const hh = d.getHours().toString().padStart(2, '0');
+              const mm = d.getMinutes().toString().padStart(2, '0');
+              startTimeStr = `${hh}:${mm}`;
+            } else if (typeof fetchedEvent.startTimeStamp === 'string') {
+              startTimeStr = fetchedEvent.startTimeStamp;
+            }
+            const [startHour, startMinute] = startTimeStr.split(':');
+            setStartTime({ hour: parseInt(startHour, 10), minute: parseInt(startMinute, 10) });
+          }
+
+          // Convert endTimeStamp to {hour, minute} regardless of type.
+          if (fetchedEvent.endTimeStamp !== undefined && fetchedEvent.endTimeStamp !== null) {
+            let endTimeStr = '';
+            if (typeof fetchedEvent.endTimeStamp === 'number') {
+              const d = new Date(fetchedEvent.endTimeStamp);
+              const hh = d.getHours().toString().padStart(2, '0');
+              const mm = d.getMinutes().toString().padStart(2, '0');
+              endTimeStr = `${hh}:${mm}`;
+            } else if (typeof fetchedEvent.endTimeStamp === 'string') {
+              endTimeStr = fetchedEvent.endTimeStamp;
+            }
+            const [endHour, endMinute] = endTimeStr.split(':');
+            setEndTime({ hour: parseInt(endHour, 10), minute: parseInt(endMinute, 10) });
+          }
+
           setLocation(fetchedEvent.location);
           setUserId(fetchedEvent.userId);
           setClub(fetchedEvent.club);
@@ -98,15 +125,14 @@ const EditEventDetailScreen = () => {
 
   const handleUpdateEvent = async () => {
     try {
-      // Convert the AM/PM strings back into numeric timestamps.
-      // We convert the times by combining them with the date and parsing.
-      const newStartTimeStamp = new Date(`${date} ${startTime}`).getTime();
-      const newEndTimeStamp = new Date(`${date} ${endTime}`).getTime();
+      // Format the startTime and endTime objects to "HH:MM" strings.
+      const formattedStartTime = formatTime(startTime);
+      const formattedEndTime = formatTime(endTime);
       await updateEvent(eventId, {
         eventName,
         date,
-        startTimeStamp: newStartTimeStamp,
-        endTimeStamp: newEndTimeStamp,
+        startTimeStamp: formattedStartTime,
+        endTimeStamp: formattedEndTime,
         location,
         userId,
         club,
@@ -148,8 +174,16 @@ const EditEventDetailScreen = () => {
         value={date}
         onChangeText={setDate}
       />
-      <TimeSelector startTime={startTime} setStartTime={setStartTime} endTime={endTime} setEndTime={setEndTime} showStartPicker={showStartPicker} setShowStartPicker={setShowStartPicker} showEndPicker={showEndPicker} setShowEndPicker={setShowEndPicker} />
-
+      <TimeSelector
+        startTime={startTime}
+        setStartTime={setStartTime}
+        endTime={endTime}
+        setEndTime={setEndTime}
+        showStartPicker={showStartPicker}
+        setShowStartPicker={setShowStartPicker}
+        showEndPicker={showEndPicker}
+        setShowEndPicker={setShowEndPicker}
+      />
 
       <TextInput
         style={styles.input}
@@ -215,6 +249,8 @@ const EditEventDetailScreen = () => {
 };
 
 export default EditEventDetailScreen;
+
+
 
 
 

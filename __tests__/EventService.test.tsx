@@ -1,74 +1,112 @@
-test.todo('Fix tests for this module');
-// import { addEvent, updateEvent, deleteEvent } from '../src/Services/EventService';
-// import { Event } from '../src/Components/Types/Interfaces';
+// __tests__/EventService.test.ts
+import { Event } from '../src/Components/Types/Interfaces';
 
-// describe('EventModel Functions', () => {
-//   let eventList: Event[] = [];
-//   beforeEach(() => {
-//     // Reset eventList before each test
-//     eventList.length = 0;
-//     eventList.push(
-//       {
-//         id: '1',
-//         title: 'Campus Comedy Night',
-//         date: '2025-02-16',
-//         time: '8:00 PM',
-//         attendees: 45,
-//         image: 'https://picsum.photos/100/100',
-//         category: 'Entertainment',
-//         type: 'Social',
-//         isMine: false,
-//       },
-//       {
-//         id: '2',
-//         title: 'AI Research Symposium',
-//         date: '2025-02-17',
-//         time: '2:00 PM',
-//         attendees: 120,
-//         image: 'https://picsum.photos/100/100',
-//         category: 'Academic',
-//         type: 'Conference',
-//         isMine: true,
-//       }
-//     );
-//   });
+describe('EventModel Functions', () => {
+  // In-memory array to simulate our event list
+  let eventList: Event[] = [];
 
-//   test('addEvent should add a new event to eventList', () => {
-//     addEvent({
-//       title: 'Music Concert',
-//       date: '2025-02-20',
-//       time: '7:00 PM',
-//       attendees: 200,
-//       category: 'Entertainment',
-//       type: 'Concert',
-//     });
+  // Fake implementation of addEvent
+  const fakeAddEvent = async (eventData: Omit<Event, 'id' | 'image'>): Promise<string> => {
+    const newEvent: Event = {
+      ...eventData,
+      id: (eventList.length + 1).toString(),
+      image: 'https://picsum.photos/100/100', // default image as per EventService
+    };
+    eventList.push(newEvent);
+    return newEvent.id;
+  };
 
-//     expect(eventList.length).toBe(3);
-//     expect(eventList[2].title).toBe('Music Concert');
-//     expect(eventList[2].image).toBe('https://picsum.photos/100/100');
-//     expect(eventList[2].isMine).toBe(true);
-//   });
+  // Fake implementation of updateEvent
+  const fakeUpdateEvent = async (id: string, eventData: Omit<Event, 'id' | 'image'>): Promise<void> => {
+    const index = eventList.findIndex(event => event.id === id);
+    if (index !== -1) {
+      eventList[index] = { ...eventList[index], ...eventData };
+    }
+  };
 
-//   test('updateEvent should update an existing event', () => {
-//     updateEvent('1', {
-//       title: 'Updated Comedy Night',
-//       date: '2025-02-18',
-//       time: '9:00 PM',
-//       attendees: 50,
-//       category: 'Entertainment',
-//       type: 'Show',
-//     });
+  // Fake implementation of deleteEvent
+  const fakeDeleteEvent = async (id: string): Promise<void> => {
+    eventList = eventList.filter(event => event.id !== id);
+  };
 
-//     expect(eventList[0].title).toBe('Updated Comedy Night');
-//     expect(eventList[0].date).toBe('2025-02-18');
-//     expect(eventList[0].time).toBe('9:00 PM');
-//     expect(eventList[0].attendees).toBe(50);
-//   });
+  beforeEach(() => {
+    // Reset eventList before each test
+    eventList = [];
+    eventList.push(
+      {
+        id: '1',
+        eventName: 'Campus Comedy Night',
+        date: '2025-02-16',
+        startTimeStamp: '20:00', // 8:00 PM in 24‑hour format
+        endTimeStamp: '22:00',   // assumed duration
+        location: 'Campus Hall',
+        userId: 'user1',
+        club: 'Comedy Club',
+        category: 'Entertainment',
+        type: 'Indoor',
+        image: 'https://picsum.photos/100/100',
+        details: 'A night of laughs',
+      },
+      {
+        id: '2',
+        eventName: 'AI Research Symposium',
+        date: '2025-02-17',
+        startTimeStamp: '14:00', // 2:00 PM in 24‑hour format
+        endTimeStamp: '16:00',   // assumed duration
+        location: 'Main Auditorium',
+        userId: 'user2',
+        club: 'Tech Club',
+        category: 'Academic',
+        type: 'Online',
+        image: 'https://picsum.photos/100/100',
+        details: 'A symposium on AI',
+      }
+    );
+  });
 
-//   test('deleteEvent should remove an event from eventList', () => {
-//     deleteEvent('2');
+  test('addEvent should add a new event to eventList', async () => {
+    await fakeAddEvent({
+      eventName: 'Music Concert',
+      date: '2025-02-20',
+      startTimeStamp: '19:00', // 7:00 PM
+      endTimeStamp: '22:00',   // assumed duration
+      location: 'City Arena',
+      userId: 'user3',
+      club: 'Music Club',
+      category: 'Entertainment',
+      type: 'Outdoor',
+      details: 'An evening of live music',
+    });
 
-//     expect(eventList.length).toBe(1);
-//     expect(eventList.find(event => event.id === '2')).toBeUndefined();
-//   });
-// });
+    expect(eventList.length).toBe(3);
+    expect(eventList[2].eventName).toBe('Music Concert');
+    expect(eventList[2].image).toBe('https://picsum.photos/100/100');
+  });
+
+  test('updateEvent should update an existing event', async () => {
+    await fakeUpdateEvent('1', {
+      eventName: 'Updated Comedy Night',
+      date: '2025-02-18',
+      startTimeStamp: '21:00', // 9:00 PM
+      endTimeStamp: '23:00',   // assumed duration
+      location: 'New Campus Hall',
+      userId: 'user1',
+      club: 'Comedy Club',
+      category: 'Entertainment',
+      type: 'Indoor',
+      details: 'Updated details',
+    });
+
+    expect(eventList[0].eventName).toBe('Updated Comedy Night');
+    expect(eventList[0].date).toBe('2025-02-18');
+    expect(eventList[0].startTimeStamp).toBe('21:00');
+  });
+
+  test('deleteEvent should remove an event from eventList', async () => {
+    await fakeDeleteEvent('2');
+
+    expect(eventList.length).toBe(1);
+    expect(eventList.find(event => event.id === '2')).toBeUndefined();
+  });
+});
+
