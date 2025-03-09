@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, Button, StyleSheet, TextInput } from 'react-native';
-import Slider from '@react-native-community/slider'; // Make sure to import correctly
+import { TimerPickerModal } from 'react-native-timer-picker'; // Import TimerPickerModal
 import { EventData } from '../Types/Interfaces';
 
 interface TimeSelectorModalProps {
@@ -12,46 +12,46 @@ interface TimeSelectorModalProps {
 }
 
 const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, closeModal, handleSaveEvent, event, date }) => {
-  const [eventName, setEventName] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
-  const [startTime, setStartTime] = useState('00:00'); // Start time as HH:MM string
-  const [endTime, setEndTime] = useState('00:00'); // End time as HH:MM string
+  const [eventName, setEventName] = useState<string>('');
+  const [eventDescription, setEventDescription] = useState<string>('');
+  const [startTime, setStartTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
+  const [endTime, setEndTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
+  const [showStartPicker, setShowStartPicker] = useState<boolean>(false);
+  const [showEndPicker, setShowEndPicker] = useState<boolean>(false);
 
+  // Initialize with event data or default to 00:00
   useEffect(() => {
     if (event) {
       setEventName(event.EventName);
       setEventDescription(event.EventDescription);
-      // set the start and end time in HH:MM format based on date object
-      setStartTime(event.StartTime.toDate().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })); // Convert to HH:MM format
-      setEndTime(event.EndTime.toDate().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })); // Convert to HH:MM format
+      // Assuming event.StartTime and EndTime are Date-like or ISO strings
+      const start = event.StartTime.toDate(); // Convert Timestamp to Date
+      const end = event.EndTime.toDate();
+      console.log(start.getHours(), event.StartTime);
+      setStartTime({ hour: start.getHours(), minute: start.getMinutes() });
+      setEndTime({ hour: end.getHours(), minute: end.getMinutes() });
+    } else {
+      setEventName('');
+      setEventDescription('');
+      setStartTime({ hour: 0, minute: 0 });
+      setEndTime({ hour: 0, minute: 0 });
     }
-  }, [event]);
+  }, [event, date]);
 
-  // Convert minutes to HH:MM format (24-hour format)
-  const formatTime = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  // Format time to HH:MM string
+  const formatTime = (time: { hour: number; minute: number }): string => {
+    return `${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`;
   };
 
-  // Update the startTime and endTime based on the slider value
-  const handleStartTimeChange = (value: number) => {
-    const formattedTime = formatTime(value);
-    setStartTime(formattedTime);
-  };
-
-  const handleEndTimeChange = (value: number) => {
-    const formattedTime = formatTime(value);
-    setEndTime(formattedTime);
-  };
-
+  // Handle save
   const onSaveCallback = () => {
-    handleSaveEvent(eventName, eventDescription, startTime, endTime);
+    handleSaveEvent(eventName, eventDescription, formatTime(startTime), formatTime(endTime));
     setEventName('');
     setEventDescription('');
-    setStartTime('00:00');
-    setEndTime('00:00');
-  }
+    setStartTime({ hour: 0, minute: 0 });
+    setEndTime({ hour: 0, minute: 0 });
+    closeModal();
+  };
 
   return (
     <Modal visible={isModalVisible} animationType="slide" onRequestClose={closeModal}>
@@ -71,39 +71,53 @@ const TimeSelectorModal: React.FC<TimeSelectorModalProps> = ({ isModalVisible, c
           style={styles.input}
         />
 
-        {/* Start Time Slider */}
-        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-evenly'}}>
-            <Text style={styles.label}>Start Time: </Text>
-            <Text style={styles.timeText}>{startTime}</Text>
+        {/* Start Time */}
+        <View style={styles.timeSection}>
+          <Text style={styles.label}>Start Time: {formatTime(startTime)}</Text>
+          <Button title="Select" onPress={() => setShowStartPicker(true)} />
         </View>
-        <Slider
-          minimumValue={0}
-          maximumValue={1440} // 24 hours * 60 minutes = 1440 minutes
-          step={10}
-          value={parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1])} // Convert the HH:MM string to minutes
-          onValueChange={handleStartTimeChange}
-          style={styles.slider}
+        <TimerPickerModal
+          visible={showStartPicker}
+          setIsVisible={setShowStartPicker}
+          onConfirm={(pickedDuration) => {
+            setStartTime({ hour: pickedDuration.hours, minute: pickedDuration.minutes });
+            setShowStartPicker(false);
+          }}
+          initialValue={{ hours: startTime.hour, minutes: startTime.minute }}
+          modalTitle="Pick Start Time"
+          onCancel={() => setShowStartPicker(false)}
+          hourLabel="h"
+          minuteLabel="m"
+          use12HourPicker={false} // 24-hour format
+          closeOnOverlayPress
         />
-        
 
-        {/* End Time Slider */}
-        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-evenly'}}>
-            <Text style={styles.label}>End Time: </Text>
-            <Text style={styles.timeText}>{endTime}</Text>
+        {/* End Time */}
+        <View style={styles.timeSection}>
+          <Text style={styles.label}>End Time: {formatTime(endTime)}</Text>
+          <Button title="Select" onPress={() => setShowEndPicker(true)} />
         </View>
-        <Slider
-          minimumValue={0}
-          maximumValue={1440} // 24 hours * 60 minutes = 1440 minutes
-          step={10}
-          value={parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1])} // Convert the HH:MM string to minutes
-          onValueChange={handleEndTimeChange}
-          style={styles.slider}
+        <TimerPickerModal
+          visible={showEndPicker}
+          setIsVisible={setShowEndPicker}
+          onConfirm={(pickedDuration) => {
+            setEndTime({ hour: pickedDuration.hours, minute: pickedDuration.minutes });
+            setShowEndPicker(false);
+          }}
+          initialValue={{ hours: endTime.hour, minutes: endTime.minute }}
+          modalTitle="Pick End Time"
+          onCancel={() => setShowEndPicker(false)}
+          hourLabel="h"
+          minuteLabel="m"
+          use12HourPicker={false} // 24-hour format
+          closeOnOverlayPress
         />
-        
 
-        {/* Save and Cancel Buttons */}
-        <Button title="Save" onPress={() => onSaveCallback()} />
-        <Button title="Cancel" onPress={closeModal} />
+        {/* Buttons */}
+        <View style={styles.buttonContainer}>
+          <Button title="Save" onPress={onSaveCallback} />
+          <Button title="Cancel" onPress={closeModal} />
+        </View>
       </View>
     </Modal>
   );
@@ -118,8 +132,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   label: {
-    alignSelf: 'center',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   input: {
     height: 40,
@@ -129,14 +143,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingLeft: 8,
   },
-  slider: {
+  timeSection: {
     width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 20,
   },
-  timeText: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    fontFamily: 'monospace',
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
   },
 });
 

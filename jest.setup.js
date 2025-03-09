@@ -1,81 +1,35 @@
-// jest.setup.js
 
-
-// Mock `react-native-calendars`
+import 'firebase/firestore';
+// Mock { Agenda, DateData, AgendaEntry, AgendaSchedule } from 'react-native-calendars'
 jest.mock('react-native-calendars', () => ({
+    Agenda: jest.fn(),
+    DateData: jest.fn(),
+    AgendaEntry: jest.fn(),
     AgendaSchedule: jest.fn(),
   }));
-  
-  // Mock React Navigation
-  jest.mock('@react-navigation/native', () => ({
-    NavigationContainer: ({ children }) => children,
-    useNavigation: jest.fn(),
+// Mock Ionicons from 'react-native-vector-icons/Ionicons'
+jest.mock('react-native-vector-icons/Ionicons', () => 'Ionicons');
+// Mock { initializeApp } from 'firebase/app'
+jest.mock('firebase/app', () => ({
+    initializeApp: jest.fn(),
   }));
-  
-  jest.mock('@react-navigation/bottom-tabs', () => ({
-    createBottomTabNavigator: jest.fn(() => ({
-      Navigator: ({ children }) => children,
-      Screen: ({ children }) => children,
-    })),
+// Mock { getAuth } from 'firebase/auth'
+jest.mock('firebase/auth', () => ({
+    getAuth: jest.fn(),
   }));
-  
-  // Mock React Native Auth0
-  jest.mock('react-native-auth0', () => ({
-    Auth0Provider: ({ children }) => children,
-    useAuth0: () => ({
-      authorize: jest.fn(),
-      clearSession: jest.fn(),
-      user: { name: 'Test User', email: 'test@example.com' },
-      error: null,
-    }),
-  }));
-  
-  // Mock React Native Components
-  jest.mock('react-native', () => ({
-    SafeAreaView: ({ children }) => children,
-  }));
-  
-  jest.mock('react-native-safe-area-context', () => ({
-    SafeAreaProvider: ({ children }) => children,
-    SafeAreaView: ({ children }) => children,
-    useSafeAreaInsets: jest.fn(() => ({ top: 0, bottom: 0, left: 0, right: 0 })),
-  }));
-  
-  jest.mock('react-native-vector-icons/Ionicons', () => 'Ionicons');
-  
-  // Mock Firestore & Club Services
-  jest.mock('./src/Services/FirestoreService', () => ({
-    fetchGlobalEvents: jest.fn(),
-  }));
-  
-  jest.mock('./src/Services/ClubService', () => ({
-    ClubList: jest.fn(() => []),
-  }));
-  
-  // Mock AppContext
-  jest.mock('./src/Context/AppContext', () => {
-    const actualModule = jest.requireActual('./src/Context/AppContext');
-  
-    return {
-      __esModule: true,
-      ...actualModule,
-      AppContext: {
-        Provider: ({ children }) => children,
-      },
-      useAppContext: () => ({
-        isLoggedIn: false,
-        setIsLoggedIn: jest.fn(),
-        user: null,
-        setUser: jest.fn(),
-        globalEvents: {},
-        setGlobalEvents: jest.fn(),
-        clubList: null,
-      }),
-    };
-  });
-  
-  // Mock TurboModuleRegistry (Fixes TurboModule errors)
-  jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => ({
-    getEnforcing: jest.fn(() => ({})),
-  }));
-  
+// Mock { getFirestore } from 'firebase/firestore'
+jest.mock('firebase/firestore', () => ({
+  getFirestore: jest.fn(() => ({
+    collection: jest.fn(),
+    doc: jest.fn(),
+    getDocs: jest.fn(),
+  })),
+}));
+// Mock StyleSheet from 'react-native'
+jest.mock('react-native', () => {
+  return {
+    StyleSheet: {
+      create: () => ({}),
+    },
+  };
+});

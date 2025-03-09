@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, ActivityIndicator, ScrollView, SafeAreaView } from 'react-native';
 import FirestoreService from '../../../Services/FirestoreService';
 
 
@@ -90,24 +90,30 @@ const ClubInfoTag: React.FC<ClubInfoTagProps> = ({ clubName, modalEnabled = true
         if (!modalEnabled) return null;
 
         return (
+            
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => setModalVisible(false)}
             >
-                <View style={styles.modalBackground}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Club Details</Text>
+                <SafeAreaView style={{ flex: 1 }}>
+                    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+                        <View style={styles.modalBackground}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Club Details</Text>
 
-                        {renderModalContent()}
+                                {renderModalContent()}
 
-                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                            <Text style={styles.closeButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                                <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                                    <Text style={styles.closeButtonText}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ScrollView>
+                </SafeAreaView>
             </Modal>
+            
         );
     };
 
