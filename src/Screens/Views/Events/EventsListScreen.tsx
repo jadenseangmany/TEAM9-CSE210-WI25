@@ -59,6 +59,7 @@ const EventsListScreen = () => {
         const eventsData = await fetchEvents();
         // (Optionally, you can filter the events based on selectedDay, category, type, etc.)
         setEvents(eventsData);
+        setFilteredEvents(eventsData);
       } catch (error) {
         console.error('Error fetching events:', error);
       }
