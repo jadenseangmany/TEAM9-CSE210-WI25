@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import {ClubInfoTag} from './Views/Clubs/ClubInfoScreen';
+import {ClubCard} from './Views/Clubs/ClubCard';
 import { AppContext } from "../Context/AppContext";
 import ClubSearchBar from "./Views/Clubs/ClubSearchBar";
 import {searchClubs} from "../Controller/ClubsController";
@@ -10,7 +10,7 @@ const ClubScreen = () => {
     const [searchQuery, setSearchQuery] = useState<string>("");
 
     const renderItem = ({ item }: { item: any }) => (
-        item.Name ? <ClubInfoTag clubName={item.Name} /> : null
+        item.Name ? <ClubCard clubName={item.Name} /> : null
     );
   
     return (
