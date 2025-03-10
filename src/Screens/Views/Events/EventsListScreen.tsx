@@ -9,6 +9,7 @@ import styles from './styles';
 import { Event } from '../../../Components/Types/Interfaces';
 import { fetchEvents } from '../../../Services/EventService';
 import { EventStackParamList } from '../../../Navigation/EventsNavigator';
+import { filterEvents } from '../../../Controller/EventsController';
 
 const EventsListScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<EventStackParamList>>();
@@ -16,6 +17,7 @@ const EventsListScreen = () => {
 
   // Local state for events fetched from Firestore
   const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   // (You can still include your filter states if needed)
   const [selectedDay, setSelectedDay] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -63,6 +65,18 @@ const EventsListScreen = () => {
     };
     loadEvents();
   }, [isFocused]);
+
+  useEffect(() => {
+      // Filter events based on selectedDay, selectedCategory, selectedType, and searchQuery
+      const filteredEvents = filterEvents(events, {
+        day: selectedDay,
+        category: selectedCategory,
+        type: selectedType,
+        searchQuery,
+      });
+      setFilteredEvents(filteredEvents);
+  }
+  , [selectedDay, selectedCategory, selectedType, searchQuery]);
 
   return (
     <View style={styles.container}>
@@ -113,7 +127,7 @@ const EventsListScreen = () => {
 
       <View style={{ flex: 1 }}>
         <ScrollView style={styles.eventsList}>
-          {events.map(event => (
+          {filteredEvents.map(event => (
             <EventCard
               key={event.id}
               event={event}
