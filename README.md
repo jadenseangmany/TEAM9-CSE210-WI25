@@ -1,8 +1,8 @@
 # HangApp
 
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+HangApp was built as a [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-This app is a calendar app which allows users to post and attend events nearby. We have a unique club feature that allows users to find and create club events easily, then schedule it in our built in calendar. You can run the app through running the apk located [here].
+This app is a calendar app which allows users to post and attend events nearby. We have a unique club feature that allows users to find and create club events easily, then schedule it in our built in calendar. You can download the app here: [link](https://drive.google.com/file/d/1AmIx8iUHZPzc9nvo_Tbgmd_pJU7KkHmt/view?usp=sharing)
 
 
 # Getting Started
