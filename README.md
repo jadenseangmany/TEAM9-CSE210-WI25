@@ -2,7 +2,7 @@
 
 HangApp was built as a [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-This app is a calendar app which allows users to post and attend events nearby. We have a unique club feature that allows users to find and create club events easily, then schedule it in our built in calendar. You can download the app (as an apk) here: [link](https://drive.google.com/file/d/1AmIx8iUHZPzc9nvo_Tbgmd_pJU7KkHmt/view?usp=sharing) You may need an android emulator (such as bluestacks) to run the app.
+This app is a calendar app which allows users to post and attend events nearby. We have a unique club feature that allows users to find and create club events easily, then schedule it in our built in calendar. You can download the app (as an apk) here: [link](https://drive.google.com/file/d/1AmIx8iUHZPzc9nvo_Tbgmd_pJU7KkHmt/view?usp=sharing) You may need an android emulator (such as bluestacks) to run the app. However, there are also other ways to run the app. If you have Xcode or Android Studio (or just any environment setup such as the Android SDK, or Xcode build files), then you may follow the instructions below. If you do not have an environment setup, you can follow the instructions below to setup the environment and run the app (by cloning the repository).
 
 
 # Getting Started
