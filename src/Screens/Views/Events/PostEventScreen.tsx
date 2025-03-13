@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import styles from './styles';
 import { addEvent, convertTo24HourFormat } from '../../../Services/EventService';
 import TimeSelector from '../../../Components/Calendars/TimeSelector';
+import FirestoreService from '../../../Services/FirestoreService';
 
+// Helper function to fetch clubs
+const fetchClubList = async () => {
+  try {
+    const clubs = await FirestoreService.getDataFromCollection('Clubs');
+    return clubs.map(club => ({ label: club.id, value: club.id })); // Assuming 'id' is the club name
+  } catch (error) {
+    console.error('Error fetching clubs:', error);
+    return [];
+  }
+};
 
 const PostEventScreen = () => {
   const navigation = useNavigation();
@@ -17,7 +28,11 @@ const PostEventScreen = () => {
   // const [endTime, setEndTime] = useState('');      // Format: "HH:MM AM/PM"
   const [location, setLocation] = useState('');
   const [userId, setUserId] = useState('');
-  const [club, setClub] = useState('');
+  // Modify state to handle dropdowns (for clubs)
+  const [club, setClub] = useState(null);
+  const [openClub, setOpenClub] = useState(false);
+  const [clubList, setClubList] = useState<{ label: string; value: string }[]>([]);
+  // a
   const [details, setDetails] = useState('');
   const [startTime, setStartTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
   const [endTime, setEndTime] = useState({ hour: 0, minute: 0 }); // Store as { hour, minute }
@@ -35,6 +50,19 @@ const PostEventScreen = () => {
     { label: 'Conference', value: 'Conference' },
     { label: 'Workshop', value: 'Workshop' },
   ];
+
+  // Fetch the list of clubs when the screen loads
+  useEffect(() => {
+    const loadClubs = async () => {
+      try {
+        const clubs = await FirestoreService.getDataFromCollection('Clubs');
+        setClubList(clubs.map(club => ({ label: club.id, value: club.id }))); // Assuming 'id' is the club name
+      } catch (error) {
+        console.error('Error fetching clubs:', error);
+      }
+    };
+    loadClubs();
+  }, []);
 
   // State for Type dropdown
   const [type, setType] = useState('');
@@ -111,13 +139,19 @@ const PostEventScreen = () => {
         value={userId}
         onChangeText={setUserId}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Club"
-        placeholderTextColor={'grey'}
-        value={club}
-        onChangeText={setClub}
-      />
+      {/* Club Dropdown instead of text input */}
+        <DropDownPicker
+          open={openClub}
+          value={club}
+          items={clubList}
+          setOpen={setOpenClub}
+          setValue={setClub}
+          placeholder="Select a Club"
+          style={styles.input}
+          listMode="SCROLLVIEW"
+          zIndex={4000}
+          zIndexInverse={1000}
+        />
       <DropDownPicker
         open={openCategory}
         value={category}
